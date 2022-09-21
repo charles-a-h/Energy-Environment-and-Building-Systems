@@ -1,0 +1,1582 @@
+---
+title:  "Energy, Environment, and Building Systems: Exploration and Solutions Utilizing Data Science and Analytics"
+subtitle: ""
+author: "Charles Ajax Hulebak"
+header-includes:
+- \usepackage{titling}
+- \posttitle{\end{center}}
+output:
+  pdf_document:
+    citation_package: natbib
+    df_print: kable
+    fig_crop: no
+    latex_engine: xelatex
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+  html_document:
+    df_print: paged
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    theme: simplex
+  word_document: default
+geometry:
+- top=2.5cm
+- bottom=2.5cm
+- left=2.5cm
+- right=2.5cm
+- heightrounded
+highlight-style: haddock
+linkcolor: blue
+mainfont: Arial
+fontsize: 11pt
+sansfont: Verdana
+documentclass: report
+urlcolor: blue
+theme: journal
+---
+```{r setup, include=FALSE}
+options(knitr.duplicate.label = "allow")
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Introduction and Project Overview 
+We are living in an unprecedented time with the ability to collaborate globally. While considering these opportunities, the ability exists to address common concerns that affect all of us.  This publication seeks to explore these concerns using scientific evidence, exploratory data analysis, data science to recognize opportunities, along with incentives and policies to guide solutions.
+
+This document was initially produced as a series of smaller segments of analysis, then compiled to create a holistic understanding and a solution for a much more complex concern.  Some of these sections have been referenced from previously researched topics, and can now be connected using data science and software programming.  The objective of this publication seeks to address:
+
+*   Health and Environmental risks from Increased Greenhouse Gas (GHG) Emissions
+*   Industry Trends and Responses
+*   Analyzing Electrical Use
+*   Technology and Communication methods within Infrastructure
+*   Analyzing a sub-segment of opportunity within Infrastructure and Energy (sensors)
+*   Using Data Science and Machine Learning with this data to discovery insights
+*   Quantifying savings with rough order of magnitude estimates for energy and environmental change
+
+This publication provides an overview of industry trends which are associated and should be considered for future energy initiatives, as well as historic trends associated with greenhouse gas emissions, the carbon budget and relationship to carbon dioxide emissions from fuel sources.  There are opportunities to enhance our environmental conditions by increasing the efficiency and performance of existing energy systems, as well as introducing new solutions for our future.  The environment and energy are complex systems, and this publication seeks to provide an overview of some of the important aspects, while recognizing that there are many more details that can be explored.
+
+The ability to utilize data science, analytics, data engineering, machine learning, and big data with software applications, programming libraries and languages provide the ability to showcase the data, modify the data, and discover innovative opportunities. A variety of mathematical, statistical, and scientific methods have been applied to referenced data sources to connect information logically, considering the environment, existing energy use, opportunities for improvement, then implementing a proposed solution to determine the outcome.  The result from this information seeks to recognize economic and environmental savings during the lifecycle of these investments.
+
+Exploratory data analysis (EDA) has been performed on sections of the referenced data sources, and others include more in-depth within this document have been using data science methods known as supervised and unsupervised learning methods.  Examples of these include time-series, correlation, clustering, and machine learning to discover insights.
+
+The first step begins with downloading the data, appropriate data science, analysis and statistical packages, libraries, and configuration settings.  (If your intention is to test and run the data with the code, you will need to install additional programs such as R-CRAN, as well as mapping download location will need to be configured.) 
+
+**Install R data science and analysis packages as required**
+```{r warning=FALSE, message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60), echo=FALSE}
+options(width = 60)
+# matrix(runif(100), ncol = 20)
+# Install RTools to build R packages if required
+# https://cran.r-project.org/bin/windows/Rtools/
+if(!require(bigmemory))install.packages("bigmemory", repos = "http://cran.us.r-project.org")
+if(!require(car))install.packages("car", repos = "http://cran.us.r-project.org")
+if(!require(caret))install.packages("caret", repos = "http://cran.us.r-project.org")
+if(!require(circlize))install.packages("circlize", repos = "http://cran.us.r-project.org")
+if(!require(cluster))install.packages("cluster", repos = "http://cran.us.r-project.org")
+if(!require(corrplot))install.packages("corrplot", repos = "http://cran.us.r-project.org")
+if(!require(cowplot))install.packages("cowplot", repos = "http://cran.us.r-project.org")
+if(!require(data.table))install.packages("data.table", repos = "http://cran.us.r-project.org")
+if(!require(dendextend))install.packages("dendextend", repos = "http://cran.us.r-project.org")
+if(!require(dplyr))install.packages("dplyr", repos = "http://cran.us.r-project.org")
+if(!require(dslabs))install.packages("dslabs", repos = "http://cran.us.r-project.org")
+if(!require(dtwclust))install.packages("dtwclust", repos = "http://cran.us.r-project.org")
+if(!require(dygraphs))install.packages("dygraphs", repos = "http://cran.us.r-project.org")
+if(!require(e1071))install.packages("e1071", repos = "http://cran.us.r-project.org")
+if(!require(factoextra))install.packages("factoextra", repos = "http://cran.us.r-project.org")
+if(!require(FactoMineR))install.packages("FactoMineR", repos = "http://cran.us.r-project.org")
+if(!require(formatR))install.packages("FactoMineR", repos = "http://cran.us.r-project.org")
+if(!require(GGally))install.packages("GGally", repos = "http://cran.us.r-project.org")
+if(!require(gganimate))install.packages("gganimate", repos = "http://cran.us.r-project.org")
+if(!require(ggcorrplot))install.packages("ggcorrplot", repos = "http://cran.us.r-project.org")
+if(!require(ggeasy))install.packages("ggeasy", repos = "http://cran.us.r-project.org")
+if(!require(ggplot2))install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+if(!require(ggraph))install.packages("ggraph", repos = "http://cran.us.r-project.org")
+if(!require(ggrepel))install.packages("ggrepel", repos = "http://cran.us.r-project.org")
+if(!require(gplots))install.packages("gplots", repos = "http://cran.us.r-project.org")
+if(!require(grid))install.packages("grid", repos = "http://cran.us.r-project.org")
+if(!require(gridExtra))install.packages("gridExtra", repos = "http://cran.us.r-project.org")
+if(!require(Hmisc))install.packages("Hmisc", repos = "http://cran.us.r-project.org")
+if(!require(hrbrthemes))install.packages("hrbrthemes", repos = "http://cran.us.r-project.org")
+if(!require(htmltools))install.packages("htmltools", repos = "http://cran.us.r-project.org")
+if(!require(igraph))install.packages("igraph", repos = "http://cran.us.r-project.org")
+if(!require(kableExtra))install.packages("kableExtra", repos = "http://cran.us.r-project.org")
+if(!require(lubridate))install.packages("lubridate", repos = "http://cran.us.r-project.org")
+if(!require(magrittr))install.packages("magrittr", repos = "http://cran.us.r-project.org")
+if(!require(openair))install.packages("openair", repos = "http://cran.us.r-project.org")
+if(!require(PerformanceAnalytics))install.packages("PerformanceAnalytics", repos = "http://cran.us.r-project.org")
+if(!require(plotly))install.packages("plotly", repos = "http://cran.us.r-project.org")
+if(!require(png))install.packages("png", repos = "http://cran.us.r-project.org")
+if(!require(randomForest))install.packages("randomForest", repos = "http://cran.us.r-project.org")
+if(!require(RColorBrewer))install.packages("RColorBrewer", repos = "http://cran.us.r-project.org")
+# if(!require(reshape))install.packages("reshape", repos = "http://cran.us.r-project.org")
+if(!require(scales))install.packages("scales", repos = "http://cran.us.r-project.org")
+if(!require(tidyr))install.packages("tidyr", repos = "http://cran.us.r-project.org")
+if(!require(tidyverse))install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(TSclust))install.packages("TSclust", repos = "http://cran.us.r-project.org")
+if(!require(xts))install.packages("xts", repos = "http://cran.us.r-project.org")
+if(!require(mlbench))install.packages("mlbench", repos = "http://cran.us.r-project.org")
+```
+
+```{r, include=FALSE, echo=FALSE}
+# Before using RMarkdown, install TinyTex and other packages
+# Install for Knit Package
+# install.packages('tinytex')
+# tinytex::install_tinytex() 
+# tinytex::reinstall_tinytex(repository = "latest")
+# uninstall_tinytex(force = FALSE, dir = tinytex_root())
+# check tinytex::tinytex_root()
+# options(tinytex.verbose = TRUE)
+# update.packages(ask = FALSE, checkBuilt = TRUE)
+```
+**Load Packages**
+```{r, warning=TRUE, message=FALSE}
+library("bigmemory")
+library("car")
+library("caret")
+library("circlize")
+library("cluster")
+library("corrplot")
+library("cowplot")
+library("data.table")
+library("dendextend")
+library("dplyr")
+library("dslabs")
+library("dtwclust")
+library("dygraphs")
+library("e1071")
+library("factoextra")
+library("FactoMineR")
+library("formatR")
+library("GGally")
+library("gganimate")
+library("ggcorrplot")
+library("ggeasy")
+library("ggplot2")
+library("ggraph")
+library("ggrepel")
+library("gplots")
+library("grid")
+library("gridExtra")
+library("Hmisc")
+library("hrbrthemes")
+library("htmltools")
+library("igraph")
+library("kableExtra")
+library("lubridate")
+library("magrittr")
+library("openair")
+library("PerformanceAnalytics")
+library("plotly")
+library("png")
+library("randomForest")
+library("RColorBrewer")
+library("reshape")
+library("scales")
+library("tidyr")
+library("tidyverse")
+library("TSclust")
+library("xts")
+library("mlbench")
+library(dplyr, warn.conflicts = FALSE)
+options(dplyr.summarise.inform = FALSE)
+options(digits=3)
+```
+
+**Access Data Files and Configure the Working Directory**
+```{r warning=TRUE, message=FALSE, echo=FALSE}
+# 1. Download the content from github or links provided (data and images)
+# 2. Assign the working directory: Session/Set Working Directory/Choose Directory
+```
+
+# Health Risks, Environmental Conditions, and using Data to understand our Environment
+We spend nearly 90% of our time indoors, which varies by geography and occupation.^1^  Although we enjoy the benefits of using the buildings in which we occupy, they have the ability to operate more efficiently and provide us with a higher level of comfort as well as provide a higher level of efficiency.  According to the United States Department of Energy, 40% of all primary energy use and 76% of electricity use is consumed by the building sector.^2^  Although there are other demands for energy use, this introduction provides an overview of historical conditions that have influenced some of the infrastructure that exists, as well as recognizing future energy efficiencies. 
+
+The decisions we are making to improve our global living conditions are guided by past, present, and forecasted data.  The trends within this data are important to understand so that we can be proactive with our decisions today and into the future.  International scientists have recognized that the planet’s surface temperature is increasing as greenhouse gas (GHG) emissions increase, as well as the rise of carbon dioxide (CO2) emissions, which will be referenced in subsequent data and visualizations.^3,4,5^  The increase of CO2 emissions has an impact on environmental systems, human health, socioeconomic, political, and other factors.
+
+## Human Health Concerns from Greenhouse Gases and Climate Change  
+Although this publication does not address specific human health conditions, health professionals, world organizations, and many others have recognized the human health impact from greenhouse gases and climate change.^6,7,8^
+
+The World Health Organization has indicated that climate change is the single biggest health threat facing humanity, while addressing catastrophic health impacts such as clean air, safe drinking water, heat stress, sufficient food and others.^6^  Physicians have recognized concerns such as population displacement and increase of infectious disease.^7^  The National Institute of Environment Health Sciences (NIH) indicates that climate-related hazards include biological, chemical, physical stress that can occur in different locations, times, populations, and severity, which is also referred to as exposure pathways.^8^  These exposure pathways range from extreme heat, air quality, flooding, vector-borne infection, water-related infection, mental health and others.
+
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/pollution.jpg", dpi = 150)
+```
+***Simplified diagram of the ecological effects caused by nitrogen and sulfur air pollution***^9^
+
+These health repercussions are import to recognize and are the purpose of stimulating change within our environment to improve the human health conditions.
+
+## Risks to Energy Infrastructure Climate Change and Energy 
+Although the intent of this report is focused on energy use and consumption, it is important to recognize that there are a number of risks that can cause damage to the reliability of energy sources from a variety of sources.  These risks may include natural or manmade threats, such as earthquakes and flooding, in which some of these concerns can be exasperated by climate change.
+
+According to the U.S. Geological Survey, increased global surface temperatures have the ability to increase droughts and storm intensity, as well as cause the sea level to rise.^10^
+
+# Environmental Data
+The following datasets provide historic to current climate data to better understand the significance of global trends.
+
+## Carbon Dioxide Human Health Concerns from Greenhouse Gases and Climate Change  
+
+The National Oceanic and Atmospheric Administration (NOAA) and Carbon Dioxide Information Analysis Center (CDIAC) provide valuable data to help us better understand these global trends: ^3,4,5^
+
+**Import and Review NOAA Temperature and Emissions Data**
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'} 
+# Import data
+greenhouse_gases <- 
+  read.table("01Data/01-greenhouse_gases.txt",header=TRUE,sep=" ")
+  # Law Dome Ice Core 2000-Year CO2, CH4, and N2O Data
+  historic_co2 <- read.table("01Data/02-historic_co2.txt",header=TRUE,sep=" ")
+  # Trends in Atmospheric Carbon Dioxide.  Internal CRAN library DSLABS 
+  temp_carbon <- read.table("01Data/03-temp_carbon.txt",header=TRUE,sep=" ")
+  # Antarctic Ice Cores Revised 800KYr CO2 Data
+```
+**Summary statistics showing the range of values for the data sets:** 
+```{r}
+# Summary Statistics
+summary(greenhouse_gases)
+summary(historic_co2)
+summary(temp_carbon)
+```
+## Global Carbon Emissions, Temperature, Land and Ocean Anomalies
+The data that includes annual mean global temperature anomalies since the year 1880, as well as annual global carbon emissions since 1751, both of which are ongoing measurements.^5^
+```{r warning=FALSE, message=FALSE, out.width='90%', fig.align = 'center'} 
+# Data plots
+temp <- temp_carbon %>% 
+  filter(year > 1880) %>% 
+  ggplot(aes(x=year, y=temp_anomaly, color=year)) +
+    geom_line() +
+    scale_color_gradient(low = "blue", high = "red") +
+    ggtitle("Temperature Anomaly") +
+    theme(plot.title = element_text(size=12)) +
+    ylab("Temperature Anomaly") +
+    theme_light()
+
+# Land Plot
+land <- temp_carbon %>% 
+  filter(year > 1880) %>% 
+  ggplot(aes(x=year, y=land_anomaly, color=year)) +
+    geom_line() +
+    scale_color_gradient(low = "blue", high = "red") +
+    ggtitle("Land Anomaly") +
+    theme(plot.title = element_text(size=12)) +
+    ylab("Land Anomaly") +
+    theme_light()
+
+# Ocean Plot
+ocean <- temp_carbon %>% 
+  filter(year > 1880) %>% 
+  ggplot(aes(x=year, y=ocean_anomaly, color=year)) +
+    geom_line() +
+    scale_color_gradient(low = "blue", high = "red") +
+    ggtitle("Ocean Anomaly") +
+    theme(plot.title = element_text(size=12)) +
+    ylab("Ocean Anomaly") +
+    theme_light()
+
+# Carbon
+carbon <- temp_carbon %>% 
+  ggplot(aes(x=year, y=carbon_emissions, color=year)) +
+    geom_line() +
+    scale_color_gradient(low = "blue", high = "red") +
+    ggtitle("Carbon Emissions") +
+    theme(plot.title = element_text(size=12)) +
+    ylab("Carbon Emissions") +
+    theme_light() 
+
+grid.arrange(temp, land, ocean, carbon, ncol=2, nrow=2, 
+             name = "Anomalies and Emissions")
+```
+These anomalies show seasonality trends with a positive linear relationship, showing increases from 1960, while global carbon emissions have continually increased with slight variations associated with seasonality (trends over time).
+
+## Atmospheric Greenhouse Gas Concentration
+This NOAA dataset indicates the concentrations of the three main greenhouse gases carbon dioxide (CO2), methane(CH4), and nitrous oxide(N20). Measurements are from the Law Dome Ice Core in Antarctica. Selected measurements are provided every 20 years from 1-2000 CE.^3^  This data visualization helps us understand how these rates have changed over time:
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'} 
+greenhouse_gases %>%
+  ggplot(aes(year, concentration)) +
+  geom_line(color = "red") +
+  facet_grid(gas ~ ., scales = "free") +
+  geom_vline(xintercept = 1850) +
+  ylab("Concentration (CH4, CO2, & N2O ppm)") +
+  ggtitle("Atmospheric Greenhouse Gas Concentration, 0-2000") +
+  theme_light()
+```
+Greenhouse gases have also increased over the duration of time, while increasing exponentially since approximately 1880.  As we continue to investigate this data further, it's important to recognize the challenges that this information provides.
+
+## Atmospheric Carbon Dioxide (CO2) Concentration Over 800,000 years
+This dataset obtained from NOAA includes the Concentration of carbon dioxide in ppm by volume from direct measurements at Mauna Loa, Hawaii (1959 - 2021) and indirect measurements from a series of Antarctic ice cores (approx. -800,000 - 2001 CE).^4^  Global carbon dioxide trends are also available which reflect similar trends, however the dataset from Mauna Loa has been collected over a longer duration.  
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'} 
+co2_time <- historic_co2 %>%
+  ggplot(aes(year, co2)) +
+  geom_line(color = "red") +
+  ggtitle("Atmospheric CO2 concentration, -800,000 BC to today") +
+  xlab("Year") +
+  ylab("CO2 (ppmv)") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  theme_light()
+co2_time
+```
+This data set indicates long durations of seasonality cycles; however, we have not experienced a continual downward trend since the year 272, indicating that CO2 has a positive linear trend and has increased exponentially.
+
+## Emissions and the Global Carbon Budget
+Utilizing the Global Carbon Budget data set, we can review emissions generated by various sources, which are measured in million tons of carbon per year (MtC/yr).
+
+**The full global carbon budget is calculated by the following formula:**^11^
+$$E_{FOSSIL} + E_{LUC} = G_{ATM} + S_{OCEAN} + S_{LAND} + B_{IM}$$
+Where the variables that are reported annually include:
+
+*  $E_{FOSSIL}:$ fossil fuel combustion and oxidation from all energy and industrial processes (including cement production and carbonation)
+*  $E_{LUC}:$ the emissions resulting from deliberate human activities on land, including those leading to land-use change
+*  $G_{ATM}:$ partitioning among the growth rate of atmospheric CO2 concentration
+*  $S_{OCEAN}:$ the sink of CO2 in the ocean 
+*  $S_{LAND}:$ the sink of CO2 on land 
+*  $B_{IM}:$ budget imbalance
+
+**The growth rate for emissions is calculated by:**^11^
+
+$$E_{FOSSIL}(t_{0}+1) − E_{FOSSIL}(t_{0})) / E_{FOSSIL}(t_{0}) × 100%$$
+**Global Carbon Budget Dataset^12^**
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'} 
+# Import Data
+global_carbon <- 
+  read.table("01Data/04-Global_carbon_budget_2021.txt",header=TRUE,sep=",") 
+
+#Reviewing the data set
+# str(global_carbon)
+# Summary Statistics
+prettyNum(summary(global_carbon))
+```
+**Carbon Dioxide Emissions by Fuel Type**
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center', tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+gct <- ggplot(order = dplyr::desc(global_carbon)) +
+  geom_area(aes(global_carbon$year, global_carbon$fossil, fill = 'Fossil'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(global_carbon$year, global_carbon$coal, fill = 'Coal'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(global_carbon$year, global_carbon$oil, fill = 'Oil'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(global_carbon$year, global_carbon$gas, fill = 'Gas'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(global_carbon$year, global_carbon$cement, fill = 'Cement'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(global_carbon$year, global_carbon$flaring, fill = 'Flaring'),             colour = "black", size = .7, alpha = .7) +
+  scale_fill_brewer(palette = "Spectral", name ='Fuel Type') +
+  xlab('Year') +
+  ylab('Megatonnes of Carbon') +
+  ggtitle("Carbon Dioxide Emissions by Fuel Type") +
+  theme_light()
+gct
+```
+This time-series visualization indicates that there has been an upward trend for CO2 emissions from each type of fuel source since 1960, with fossil emissions are producing the largest amount and flaring emissions being the lowest.
+
+# Energy Consumption Portfolios
+Each country uniquely owns a different energy portfolio, consisting of coal, oil, gas, nuclear, hydropower, wind, solar, and other renewables.
+
+There are many sources of energy that are used in the world, with approximately 84% of the global economy from fossil fuels in 2021.^13^ This referenced dataset will help us gain a better understanding of the energy distribution in the world.
+
+**World Energy Distribution (1965 - 2021)^14^**
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'} 
+# Import Data
+world_energy <- read.table("01Data/world_energy.csv",header=TRUE,sep=",") 
+#Reviewing the data set
+# str(world_energy)
+# Summary Statistics
+prettyNum(summary(world_energy))
+```
+
+```{r warning=FALSE, message=FALSE, out.width='90%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/Global-primary-energy-by-source.png", dpi = 150)
+```
+
+```{r warning=FALSE, message=FALSE, out.width='90%', fig.align = 'center', tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+EnergyDist <- ggplot(order = dplyr::desc(world_energy)) +
+  geom_area(aes(world_energy$year, world_energy$coal, fill = 'Coal'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(world_energy$year, world_energy$oil, fill = 'Oil'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(world_energy$year, world_energy$gas, fill = 'Gas'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(world_energy$year, world_energy$nuclear, fill = 'Nuclear'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(world_energy$year, world_energy$hydropower, fill = 'Hydro'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(world_energy$year, world_energy$wind, fill = 'Wind'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(world_energy$year, world_energy$solar, fill = 'Solar'), 
+            colour = "black", size = .7, alpha = .7) +
+  geom_area(aes(world_energy$year, world_energy$otherrenewables, fill = 'Other renewables'), 
+            colour = "black", size = .7, alpha = .7) +
+  scale_fill_brewer(palette = "Spectral", name ='Fuel Type') +
+  xlab('Year') +
+  ylab('Energy per capita (kWh - equivalent)') +
+  ggtitle("World Energy Consumption by Type") +
+  theme_light()
+EnergyDist
+```
+This same dataset is also shown in the visualization below, which quantifies the total energy use while indicating the energy consumption diversity by country in 2021.^13^  A complete list of countries and their energy distribution are available for review in the cited data source.
+```{r warning=TRUE, message=FALSE, out.width='75%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/per-capita-energy-stacked.png", dpi = 150)
+```
+Within the United States, the following diagram indicates the pathways for energy mix by source and the end-use sector used in 2021.^11^ 
+```{r warning=TRUE, message=FALSE, out.width='75%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/01-Energy_Cons_Sector.jpg", dpi = 150)
+```
+Many initiatives have taken place across business lines and sectors to create efficiency in systems. The industrial industry is one of the most energy intensive from all sources, using nearly 35% of total energy consumption.^15^  Buildings require materials, systems, components and more to be constructed.   Improvements have been made to increase the efficiency for manufacturing industry physical plant, as well as many mechanical systems, including engineered solutions for machining, pumping systems, compressed air, motors, fuel and steam-based process heating systems, waste recovery and other innovations.^16^
+
+# Industry Responses to Energy Use
+## Energy Program Initiatives
+There has been a tremendous amount of effort made by organizations, governments, and individuals that have influenced and developed policies, research and technology innovations. Collaboration within the industry has sought to improve energy resilience through the diversification of sources, creating efficiency, and environmental conditions, while improving infrastructure, reducing energy demands and greenhouse emissions. 
+
+Innovations within the renewable industry have supported energy targets to reduce emissions while pursuing this balanced approach.  Organizations have been formed globally to locally to influence the effective development of energy infrastructure, facilities, and site development.  Global standards have been established that prescribe minimal performance requirements, such as the building codes and criteria, as well as European Standards.^17,18^  Additional programs include the International Renewable Energy Agency (IRENA), sustainable development goals by the United Nations, as well as initiatives such as the 2030 Challenge, which are integrated efforts are being pursued between public and private entities.^19,20,21^
+
+Within the United States, there are many federal, state, and commercially operated programs which guide energy initiatives.  Within the building and community planning and construction industry, the United States Green Building Council’s Leadership (USGBC) in Energy and Environmental Design (LEED) and additional programs seek to guide an integrative process to reduce energy consumption and environmental impacts.^22^  These programs provide guidelines which prescribe and evaluate performance metrics, as well as provide financial incentives and certification for building efficiency characteristics, operations and other characteristics.  This program works in alignment with other industry standards, such as the ANSI/ASHRAE/IES Standard 90.1-2019 - Energy Standard for Buildings.^23^
+```{r warning=TRUE, message=FALSE, out.width='25%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/leed.jpg", dpi = 150)
+```
+Another initiative is the include Energy Star® program which has improved the efficiency of technologies across a broad range of industries, ranging from electronics, building products and many other innovative solutions.^24^
+
+```{r warning=TRUE, message=FALSE, out.width='25%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/EnergyStar.png", dpi = 150)
+```
+
+## Organizational, Manufacturing, and the Supply Chain 
+Organizations approach efficiency opportunities from many different perspectives.  Companies such as the vehicle manufacturer Toyota introduced the initial “Toyota Production System”, followed by the “The Toyota Way”, which has streamlined efficiency improvements with a focus on continual improvement.^25,26^  This model is also understood as lean six sigma management, lean manufacturing, and just-in-time (JIT) production or JIT manufacturing. These systems seek to address wastes originating from overproduction, waiting time, transportation, processing, excess inventory, movement, product defects, and underutilization.
+
+Another example is from the company Caterpillar, who designs, develops, engineers, manufactures, markets and sells machinery (amongst other products).  Along with making commitments to reduce GHG emissions for facilities, they have focused on reengineering some of their product lines to reduce emissions.^27^ 
+
+The energy consumed by the supply chain is the energy input from all suppliers to produce a product.  Industrial management decisions are considered where it is more affordable to locally produce or outsource products.  There are several general strategies and models for supply chains, while promoting various factors such as efficiency, speed, continuous-flow, agile, customer-configurations, and/or flexibility.^28^  In general, the objective is to deliver products from facilities, using various types of transportation along routes to their destination.
+
+The approach for a more sustainable supply chain has been influenced by sourcing suppliers that adhere to social, ethical and environmental standards, which request the same from their suppliers.^29^  This in turn creates a cascading effect that will promote these practices.  The Responsible Business Alliance (RBA), was established to promote this sphere of influence for continual improvement along supply chains.^30^
+```{r warning=TRUE, message=FALSE, out.width='75%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/supply_chain.jpg", dpi = 300)
+```
+There are a multitude of success stories and organizations that are focused on improving quality, creating efficiency, conserving resources, while decreasing energy consumption to produce value.
+
+##	The Building Industry and Performance Initiatives
+The American Institute of Architects performed a study in 2013 for over 1,100 projects which reflected that the use of energy modeling has the ability to reduce energy consumption by 44% in comparison to the 2003 building stock.^31^  Collaboration between government entities and industries have made investments for various initiatives for both open-source and commercial modeling programs such as EnergyPro, EnergyPlus, IES,  and others to simulate energy use for short and long-term energy savings.^32,33,34^  
+
+Supplementing these collaborative efforts to analyze energy, additional open-source and commercial software such as R, Python, and others can strengthen research and solutions.^35,36^
+```{r warning=FALSE, message=FALSE, out.width='100%', fig.align = 'center'}
+img1 <-  rasterGrob(as.raster
+                    (readPNG("02Images/reverse_solar_envelope_method-01.png")),
+                    interpolate = FALSE)
+img2 <-  rasterGrob(as.raster
+                    (readPNG("02Images/reverse_solar_envelope_method-02.png")),
+                    interpolate = FALSE)
+img3 <-  rasterGrob(as.raster
+                    (readPNG("02Images/reverse_solar_envelope_method-03.png")),
+                    interpolate = FALSE)
+grid.arrange(img1, img2, img3, nrow = 1)
+```
+*Image: Building Simulation Modeling, Reverse Solar Envelope Method*^37^
+
+## Building Products Energy Usage Trends
+Energy consumption is associated with a variety of sources, which provides the ability to explore efficiency opportunities.  The Energy Information Administration (EIA) has provided the following information associated with projected trends related to energy use for a variety of commercial products:^38^
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'} 
+# Import Data
+electric <- 
+  read.table("01Data/05-Comm_purchased_elec_intensity.txt",header=TRUE,sep=",")
+```
+**Anticipated Changes in Energy Consumption by Device**
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'}
+ec <- ggparcoord(electric, columns = c(3,8,13,18,23,28,33), groupColumn = 1, 
+                 order = "allClass", showPoints = TRUE, 
+                 title = "Commercial Purchased Electricity Intensity", 
+                 alphaLines = 0.3) + 
+  scale_color_viridis(discrete=TRUE) +
+  theme(plot.title = element_text(size=12)) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  xlab("Year") +
+  ylab("Change in kw p/sf")
+ec
+```
+
+## Innovation and Technology Advancements for Energy Solutions 
+Technology innovations are continually introducing efficiencies to systems, while this energy intensity visualization suggests that certain types of building systems are expected to have greater opportunities in the future than others.
+
+Industries seek to implement innovative energy and technology solutions into projects, research and development within various sectors continue to push the boundaries with a variety of technological advancements. Significant improvements have been made with energy technologies, material sciences, natural sciences, construction methods, environmental innovations and others.
+
+Material sciences maturation has increased for technologies such as photovoltaics, energy and hydrogen storage.  Approaching solutions with material costs, innovations in nanotechnology, as well as a better understanding of the practical implications for the use of these materials. ^39^  
+
+The International Renewable Energy Agency (IRENA) has focused on a multitude of solutions including matching renewable energy generation and demand over large distances using supergrids, optimizing distribution systems, utility-scale battery solutions and more.^19^
+
+Researchers at the Massachusetts Institute of Technology (MIT) have also been focusing on innovations such as harnessing energy from waves, new solar cell materials, battery storage and others. ^40^ In addition, Georgia Tech researchers have focused on using electricity, using nuclear waste to produce electricity, generators, radio wave recycling (collecting kinetic, solar, electromagnetic, and vibration energy from sources).^41^
+
+Governments, legislators, private industry, energy companies and many of the cooperatives that own power grids have historically and continue to work collaboratively to provide a resilient and reliable power grid. Organizations such as the U.S. Government Accountability Office have identified opportunities to deploy energy storage, solar technologies, cybersecurity standards implementation, as well as support to local utilities following a disaster.^42^ Additional opportunities have been identified to develop into the future across a spectrum of energy storage, smart grids, electricity generation.^43^
+
+Although some of these may not become mainstream for decades or more, there are many existing technologies that have been integrated into energy system solutions while having the ability to replace more efficient system components when they are developed.  There is an abundant amount of opportunity for increasing efficiency within energy systems and infrastructure.
+# Energy Infrastructure
+This section includes a technical overview of systems associated with energy infrastructure, which is necessary to understand for the concluding data analysis sections. 
+ 
+Buildings serve a variety of purposes to facilitate business functions and operations.  The development of building solutions requires management, engineering, scientific, architectural design, legal processes, standards, policies, best practices, and many others to bring solutions into the built environment using an integrative framework.
+
+This section will briefly introduce the concepts of information systems, which include industrial control systems (ICS), and intelligent building systems (IBS), which are most commonly used within energy infrastructure.  Both collectively and independently, these systems are increasingly interoperating, while creating both solutions and challenges within the industry.  Each unique category of buildings serves a one or more business functions which require information systems, including ICS, IBS, and others.  Consider the healthcare business function which may have a large metropolitan hospital requiring both an ICS and IBS, whereas a smaller clinic may only require an IBS for more simpler functions to serve their requirements.
+
+```{r warning=TRUE, message=FALSE, out.width='100%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/Big_Data_Diagram.jpg", dpi = 150)
+```
+
+The smart grid is modernizing the 20th century electrical grid to the 21st century, while iteratively making progress through cycles of innovation.  The National Institute of Standards and Technology (NIST) is a primary leader for bringing manufacturers, consumers, energy providers, and regulators to accelerate the development of secure interoperability standards.  Building automation and management systems are connected to smart grids, which can influence the way in which they operate.  
+
+This diagram shows a high-level overview of the Smart Grid Architecture Model (SGAM), which diagrams the relationships between conceptual, logical, and physical architecture.^44^
+```{r warning=TRUE, message=FALSE, out.width='60%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/02-NIST_Concept_Model.png", dpi = 150)
+```
+The function of the energy source (category, sub-category) will guide the type of industrial control system requirements to operate the facility, which are often guided by stakeholders or owner(s), regulatory, policies, and other factors.  The process of integrating ICS results in many different types that uniquely serve the needs of their business function(s).
+
+## Information Systems (IS) 
+Information systems are integrated into our infrastructure, including buildings, sites, transportation, and many others.  These systems can be used independently or used in combination with one another, and are increasingly reliant on centralized monitoring and control.  
+
+Organizations have a variety of business lines, functions, and requirements that support their operational objectives.  These objectives guide the types of information systems that are integrated into their sites, facilities, and may be locally or remotely managed.  These systems, or systems of systems, may include one or more development lifecycles that generally occur as a combination of internally performed work, through technology vendors, or outsourced.  
+
+The development lifecycle may include a systems or software development lifecycle (SDLC) and product lifecycles that allow organizations to manage their technology and infrastructure.  Some organizations have developed their own system that may be more or less complex to suit the needs of their organization.  The following diagram shows phases within these respective lifecycles:
+
+```{r warning=TRUE, message=FALSE, out.width='75%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/SDLC_Prod_LS.jpg", dpi = 150)
+```
+
+It is important to understand that not every building has the same operational requirements and although these technologies and systems exist, as they may not have a practical use for the owner; aligning the requirements for the facility or site with the minimum required systems provides the most efficient and cost-effective approach, as well as reduced costs associated with long-term operations and maintenance.  
+
+These systems are applied within the building sector with a variety of both independent and networked sensors, which are metered and operate on computer networks, servers, databases, and computing infrastructure.  There are many types of sensors that are used to detect temperature, light, occupancy, energy use, liquid flow and leaks, air quality, gas concentration levels of variables (such as humidity, carbon monoxide and others), security and access control, and others that may be more specialized.  
+
+Information systems include a broad spectrum of computing platforms.^45^  These may include:
+*  Industrial control systems
+*  General purpose computing systems
+*  Cyber-physical systems
+*  Super computers
+*  Communications systems (networks, satellite, transceivers, and others)
+*  Environmental control systems
+*  Medical devices
+*  Embedded devices
+*  Sensors
+*  Mobile devices (such as smart phones and tablets) and other end-user devices
+
+The attributes associated with these systems include autonomy, controllability for complicated dynamics, human-machine interaction, and bio-inspired behavior.
+A systems diagram of a mesh network illustrates how some of these types of systems can be both local as well as geographically dispersed and interconnected using a variety of technologies.
+
+```{r fig.show = "hold", out.width = "70%", fig.align = "center", echo=FALSE} 
+knitr::include_graphics("02Images/Mesh-Network-Architecture.jpg", dpi = 150) 
+```
+
+
+*Mesh Network Architecture*^46^
+
+## Industrial Control Systems (ICS)
+
+Industrial control systems (ICS) are used to control industrial processes, which may include manufacturing, product handling, production, distribution, and others.  These can also be referred to as Operational Technology (OT) systems, are broadly used for a variety of industries, including healthcare, manufacturing, automotive, defense and others.  ICS may be categorized differently, depending upon a unique organization’s use of the ICS, or from a general systems approach.  
+The level of the existing infrastructure to the long-term objective can be considered as the level of the intelligence of the ICS or specific objective.  Technology programs and initiatives can work towards those goals, while integrating new systems and retiring/decommissioning old systems.  Within the Department of Defense alone, there are over thirty unique types of ICS that are used in over 300,000 buildings.^47^
+ICS categories include: ^47^
+*  Supervisory Control and Data Acquisition (Energy, Water, Wastewater, Pipeline, Airfield Lighting, Locks, and Dams, etc.)
+*  Distributed Control Systems (Process and Manufacturing, etc.)
+*  Building Control Systems/Building Automation Systems
+*  Utility Management Control Systems
+*  Electronic Security Systems
+*  Fire, Life Safety, Emergency Management Systems
+*  Exterior Lighting and Messaging Systems
+*  Intelligent Transportation Systems
+
+The customer domain from this architecture is where the building automation and management systems exist, which is illustrated in the following diagram:^44^
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center', echo=FALSE}
+knitr::include_graphics("02Images/03-Customer_Domain.png", dpi = 150)
+```
+
+## Intelligent Building Systems (IBS)
+There are a variety of building systems that are used to serve the organizational functions.  They may include one or more of the following systems, which are often guided by regulatory, policies, standards, organizational requirements, and others.  The categories include: ^48^  
+
+*  Integrated building management system (IBMS)
+*  Telecommunications and data system (ITS)
+*  Heating ventilation air-conditioning control system (HVAC)
+*  Addressable fire detection and alarm system (AFA)
+*  Security monitoring and access control system (SEC)
+*  Smart/energy efficient lift control system (LS)
+*  Digital addressable lighting control system (DALI)
+
+This following image is an applied application of an information systems used to control a system used by NASA to communicate with the International Space Station.
+```{r fig.show = "hold", out.width = "70%", fig.align = "center", echo=FALSE} 
+knitr::include_graphics("02Images/ISS_Flight_Control_Room.jpg", dpi = 150) 
+```
+*NASA, Flight Control Room^49^*
+## Communications Mediums
+Infrastructure utilizes a variety of communications mediums, which may include physical wires (communication and/or electrical), and wirelessly (transmitted over a variety of frequency bands) to meet the function of their objective.  Some of these characteristics include:
+**Wired systems:**
+*  More reliable than wireless systems
+*  Less susceptible to interference and disruptions
+*  Longer service lifetimes
+*  Overall cost may be higher for additional labor and materials for installation
+*  Components may be less expensive than wireless counterparts
+
+**Wireless systems:**
+
+*  Less reliable than wired systems
+*  More susceptible to interference and disruptions (than wired systems)
+*  Shorter service lifetimes
+*  Overall costs are generally lower for labor and materials than a wired system
+*  Components are often a magnitude more expensive
+*  More versatility for node installation
+*  Components that are battery operated require additional labor and maintenance, in which a power supply is responsible for the sensor(s), computing processing unit (CPU), and communications unit
+
+### Internetworking Overview
+Network communications have been established using the traditional seven-layer Open Systems Interconnection (OSI) model, in which five of these are used for building systems networked devices (i.e. controllers, sensors, and others previously mentioned).  The OSI model has seven layers which include application, presentation, session, transport, network, data link, and physical layers.^50^  The wireless sensor networks (WSN) has five layers which include application, transport, network, data link, and physical.
+There are a multitude of additional protocols that are used for process automation, industrial control systems, building automation, power system automation, automatic meter reading, and automobile/vehicles. Each of these protocols provide various levels of systems interoperability to communicate with each other and use networks with different topologies (types of network configurations).  
+
+## Internet of Things (IoT) and Big Data Analytics Overview
+The intelligence that manages building systems has been introduced through the use of IoT and Big Data technologies that use analytics and automated learning processes.  Three levels include:^51^
+
+*  **Data input at the infrastructure level:** this includes the data generated by the nodes in the building and their logical outputs.  Examples include a thermostat taking a temperature reading, or a passive infrared sensor providing a logical binary output of 1 for sensing movement or 0 for not receiving an input.
+*  **System Infrastructure:** this is the core of the intelligent system which collects, processes, and merges data into databases.  The data can be used for extraction and automated learning through the use of algorithms, artificial intelligence and more.  This area provides many opportunities for the use of data science and machine learning.
+*  **Service level:** represents the list of services offered by the system to the building managers or associated stakeholders.  For example, the building management system may have specifications to control various factors such as a fire alarm system connected to smoke-detection devices, or lighting illumination sensors to activate light controls.
+
+At the service level, the building and systems owner has the ability to control a variety of factors through an application.  The formula for this “ecosystem” can be demonstrated with a general equation such as, **Sensors + Networks + Big Data + Analytics = User Application**.^51^
+
+IoT may also provide insight for these systems, while the author identifies three primary approaches to include object-oriented, internet, and semantic visions.^51^  In brief, this includes addressing an object-oriented vision for the identification, detection, networking and processing capabilities to exchange and share information with each other, while developing advanced services on the internet.  
+
+Interconnectivity increases the complexity of the system-of-systems, however when operating effectively provides the ability to make decisions quickly.  For example, if a healthcare provider owned two hundred buildings across the nation, and had a system in place to measure the performance of their buildings and/or inventoried systems from both a broad and more granular level, then they could quickly extract unified insights to make more accurate and timely decisions.  When system or building product is released, they could more easily identify, evaluate, and make more effective decisions for the short- and long-term impacts associated with both energy and financial costs.
+
+## Cyber Security and Cyber-Physical Systems (CPS)
+It is important to understand that these systems are vulnerable to a multitude of risks that have historic references to a multitude of damages that have impacted billions of dollars of damages.  Many of these systems often have conflicting requirements for operations, performance, security, reliability, and safety, which can unintentionally impose risks.
+
+A few examples of these include malware such as Stuxnet, DuQu, Flame, and Shamoon.^48^  Various organizations have worked diligently to mitigate threats, however this will be an ongoing process at various levels with collaboration between policy makers, guidelines, standards, engineering and information technology solutions, operators and many others to maintain systems integrity. 
+```{r fig.show = "hold", out.width = "70%", fig.align = "center", echo=FALSE}
+knitr::include_graphics("02Images/CPS.png", dpi = 300) 
+```
+*NIST CPS Reference Architecture*^44^
+
+## Smart Cities
+```{r fig.show = "hold", out.width = "70%", fig.align = "center", echo=FALSE}
+knitr::include_graphics("02Images/smartcity.png", dpi = 150) 
+```
+*Smart Cities*
+
+The concept of smart cities includes many components, some of which include public safety and emergency response, traffic, environmental and energy management that can be integrated and combined to existing capabilities. Global efforts have been made to increase interoperability, which refers to making systems work together, as well as composability, which focuses on the ability to add functions and maintain continuous improvement and integration, and harmonization, which refers to achieving compatibility between technologies and systems.
+
+The IoT-Enabled Smart City Framework (IES-City Framework), which is an international public working group to reduce the cost of systems integrations while seeking to overcome barriers while promoting modern communities and infrastructure.
+
+## Systems Governance and Securing Networks
+While engineers, scientists, technologists, business leaders and many others continue to develop technologies and integrations, the legal systems and security associated with providing interoperability requires an extensive amount of oversight.
+
+Legal professionals attempt to stay up to date with technology policies, regulations, and implementing these as they are required to sustain the lifecycle of systems.  Internal staff within organizations seek to leverage information technology governance as they relate to their environments while maintaining industry best practices.  Unfortunately, they are commonly finding themselves reacting to issues after they have occurred, rather than implementing legal controls and countermeasures.  Fortunately, these incidents can stimulate new laws and policies that are intended to improve interoperability of systems and the people that use them.
+
+Much of the responsibility of securing these systems is the responsibility of those internal to an organization.  Cybersecurity specialists, analysts, network engineers, telecommunications specialists, electrical system operators, and many others seek to implement a variety of controls to manage business objectives on protected networks.  Unfortunately, organizations with great intentions are often sought after for intellectual property, monetary, or other types of advantages by both private entities and governments alike.  It is often difficult for organizations to determine the source of these threats while they depend on their own governments to support mutual agendas for systems governance and security.  
+
+Fortunately, enterprise governance standards have been created to guide an environment that can achieve organizational objectives, legal and technical standards.  Organizations such as Information Systems Audit and Control Association (ISACA) have integrated frameworks such as Control Objectives for Information and Related Technologies(COBIT) that can guide organizations to achieve both business and technical objectives.^52^  Healthcare environments are enforced with the Health Insurance Portability and Accountability Act (HIPAA) and others to protect systems, health records, patient and provider information.^53^  There are a number of other organizations that provide resources for organizations to control their enterprises, which require life cycle management until they are decommissioned.  Although these standards are in place, it requires a collaborative team and concerted effort to maintain information security using the confidentiality, integrity, and availability triad model.
+
+# Analyzing ASHRAE Electrical Meter Data
+Following the energy infrastructure overview section, we now have a better understanding of how this information has been collected, as well as how to develop useful meaning from it.
+
+## ASHRAE Building Electricity Meter Data
+The American Society of Heating, Refrigerating and Air-Conditioning Engineers (ASHRAE) collected meter data for over 20 million points of training data, sourced from 2,380 energy meters, collected for 1,448 buildings, measuring 16 sources for a duration of a three year period in different parts of the United States.^54^  This data was collected and provided to the non-profit organization Kaggle to promote data science a competition and to better understand energy usage.  This data included a multitude of variables, ranging from electricity use and meter readings, to weather conditions, building types and more.  
+ 
+
+The types of analysis that can be performed on this dataset are substantial. Examples may include forecasting energy trends while considering how outdoor air temperature can require a mechanical system to work more effectively to control a comfortable indoor environment. Another may include calculating the return on investment (ROI) for an architectural, mechanical, or electrical improvements.
+
+The objectives of this analysis include performing exploratory data analysis while observing energy consumption throughout the day and year utilizing data science.  These insights have the ability to guide organizations to more effectively conserve energy, as well as determining the economic and health value of implementing incentives to reduce emissions which are detrimental to human health.  Understanding these principles have the ability to provide economic and environmental across a spectrum of opportunities ranging from finance, resources, healthcare costs, and a multitude of environmental conditions.
+
+**Load Datasets and Explore the Variables**
+The ASHRAE data sets available for analysis include building energy consumption, weather conditions, and building metadata.  Each of the datasets are independently shown, followed by joining the variables and analyzing the information.
+
+There were originally five files within the original sourced dataset, however only three have been used for the purposes of this publication while isolating the variables used for analysis.
+Energy Consumption:
+*  Building ID: foreign key used for the metadata
+*  Meter: meter ID code (0=electricity, 1 = chilled water, 2 = steam, 3 = hot water)
+*  Timestamp: time when the meter_reading was taken, intervals of approximately 1 minute
+*  Meter reading: the value of energy in kWh when the data was collected 
+Reviewing the values of the energy use meter (kWh):
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'}
+bldg_data_train <- read.csv("01Data/06-ASHRAE_Energy_training_data.csv")
+prettyNum(summary(bldg_data_train$meter_reading))
+```
+Building Metadata:
+*  Site ID: Foreign key for weather files
+*  Building ID: sequential identifier for the dataset
+*  Primary Use: the function of the building
+*  Square feet: building gross square feet
+*  Year built:  year the building was commissioned
+*  Floor count:  variable indicating the floor level
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'}
+# Building Information Metadata
+bldg_meta <- read.csv("01Data/07-ASHRAE_building_metadata.csv")
+str(bldg_meta)
+```
+
+The final ASHRAE dataset that will be explored is for the weather data, indicating a variety of weather conditions associated with each site at hourly intervals, followed by a data visualization of the mean hour temperature throughout the year:
+
+```{r warning=FALSE, message=FALSE, out.width='90%', fig.align = 'center'}
+# Weather Data
+weather_data <- read.csv("01Data/08-ASHRAE_weather_train.csv")
+weather_temp <- weather_data$air_temperature
+weather_temp <- weather_data %>%
+    mutate(
+        date = as.POSIXct(strptime(timestamp, "%Y-%m-%d %H:%M:%S")),
+        site_id = as.factor(site_id),
+        year = year(date),
+        wday = wday(date),
+        hour = hour(date)) %>%
+    select(-c(timestamp)) %>%
+    as_tibble()
+options(repr.plot.width=50, repr.plot.height=50)
+calendarPlot(weather_temp, pollutant = "air_temperature",
+             par.settings=list(fontsize=list(text=11)),
+             main = "Weather Data Air Temperature Mean",
+             statistic = 'mean')
+```
+The next step includes joining data for analysis:
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center', tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+# Load data and combine files
+bldg_train_data <-
+  data.table::fread("01Data/06-ASHRAE_Energy_training_data.csv")
+bldg_meta <- read.csv("01Data/07-ASHRAE_building_metadata.csv")
+weather_data <- read.csv("01Data/08-ASHRAE_weather_train.csv")
+
+# Covert variable types for join
+bldg_meta$building_id <- as.integer(bldg_meta$building_id)
+weather_data$timestamp <- as.Date(weather_data$timestamp, format = "%y %m %d %H:%M:%S")
+weather_data$site_id <- as.integer(weather_data$site_id)
+
+# Join variables
+building_data <- bldg_train_data %>%
+  left_join(bldg_meta, by = "building_id") %>%
+  left_join(weather_data , by = c("site_id", "timestamp"))
+
+# Assign ISO 8601 format YYYY-MM-DD HH:MM:SS
+building_data <- building_data %>%
+  mutate(timestamp_date = ymd(gsub( " .*$", "", timestamp)),
+    timestamp_month = month(timestamp_date),
+    timestamp_day = wday(timestamp_date, label = T, abbr = T),
+    timestamp_day_number = day(timestamp_date),
+    time_ymd_hms = ymd_hms(timestamp),
+    time_hour = hour(time_ymd_hms))
+```
+
+### Daily Energy Consumption Trends
+The following data visualization indicates the energy consumption throughout a 24-hour period that is associated with the classification of the building or site.  This data reflects that certain types of buildings have a higher demand for electricity during times of the day, whereas others show consistent usage, which is directly related to organizational functions and operations.
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center'}
+energyuse <- building_data %>% 
+  group_by(time_hour, primary_use) %>% 
+  summarise(median_reading = median(meter_reading, na.rm = T)) %>% 
+  ggplot(aes(x= time_hour, y= median_reading)) +
+  geom_area(fill = "yellow", color = "black") +
+  theme(text = element_text(size=8),
+    axis.text.x = element_text(angle=45, hjust=1, size=6),
+    axis.text.y = element_text(angle=0, hjust=1, size=6)) + 
+  ggtitle("Daily Energy Consumption by Building Type") +
+  xlab("Hourly Meter Reading") +
+  ylab("Electricity Use") +
+  facet_wrap(~ primary_use, scales = "free")
+
+energyuse
+```
+### Annual Energy Consumption Trends
+This data visualization is similar to the previous, however occurring through an annual cycle.
+```{r warning=TRUE, warning=FALSE}
+energyuse2 <- building_data %>%  
+  group_by(timestamp_date, primary_use) %>% 
+  summarise(median_reading = median(meter_reading, na.rm = T)) %>% 
+  ggplot(aes(x= timestamp_date, y= median_reading)) +
+  geom_line(color = "green") +
+  geom_smooth(se = F, color = "black") +
+  ggtitle("Annual Consumption by Building Type") +
+  theme(text = element_text(size=8),
+    axis.text.x = element_text(angle=45, hjust=1, size=6),
+    axis.text.y = element_text(angle=0, hjust=1, size=6)) + 
+  ggtitle("Daily Energy Consumption by Building Type") +
+  xlab("Annual Meter Reading") +
+  ylab("Electricity Use") +
+  facet_wrap(~ primary_use, scales = "free") +
+  theme(axis.text.x = element_text(angle = 30))
+
+energyuse2
+```
+
+This data shows annual trends and some seasonality through the duration of year.  Certain types of organizations have increased operations, such as healthcare energy use increasing during the spring and summer, whereas this is lower during the fall and winter.  Other categories, such as services tend to have less seasonality and consistently have a similar energy demand and usage throughout the year.
+
+# Guiding Energy Performance with Sensor Data 
+This next dataset will provide us with the ability to assess indoor air quality values to determine opportunities.  
+The data set is sourced from the University of California Irvine (UCI) Machine Learning Repository, which contains over 20,000 instances of multivariate, time-series data that can be used for classification tasks.^55^  The dataset is associated with a research and development project within a controlled laboratory environment and collected to provide insights that can be projected over time (i.e. monthly, annual, etc.) or scale, such as large scale implementations (such as educational, healthcare, to manufacturing facilities and others).  The attributes associated with these sensor variables include:
+* Date (year, month, day, hour, minute, second)
+* Temperature (°C)
+* Relative humidity (%)
+* Illumination (lux)
+* CO2 (ppm)
+* Humidity Ratio (from temperature and humidity, provided in kgwater-vapor/kg-air)
+* Occupancy (binary classification of 0 for unoccupied, and 1 for occupied area)
+
+The National Renewable Energy Laboratory (NREL) has identified significant energy savings potential using occupant counting/presence inputs amounting to 10-40% energy savings for HVAC and lighting, as well as occupant comfort/preference inputs of 10-40% energy savings for HVAC, and 10-60% for lighting.^56,57,58,59^  Let's see what the data reveals.
+
+## Data Science Methods and Analysis
+The initial portion of this analysis includes data exploration over a five-day period, in which the occupied spaces are used most frequently.  The analysis of this data seeks to determine relationships within the indoor spaces that will provide insights for energy saving opportunities.
+
+Various statistical and data science methodologies will be implemented using time-series, correlation, and various forms of clustering analysis.  The results from this information can inform efficiency opportunities.
+
+**Load Data, Summary Statistics and Variable Conversions**
+```{r warning=TRUE, message=FALSE, out.width='90%', fig.align = 'center', tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+# Pre-processing data included converting dates to ISO format
+# Loading data
+BldgSensorTest <- read.csv("01Data/09-BldgSensorTest.csv",header=TRUE,sep=",")
+BldgSensorTest2 <- read.table("01Data/10-BldgSensorTest2.csv",header=TRUE,sep=",")
+BldgSensorTraining <- read.table("01Data/11-BldgSensorTraining.csv",header=TRUE,sep=",")
+
+# Summary Statistics
+summary(BldgSensorTest)
+summary(BldgSensorTest2)
+summary(BldgSensorTraining)
+```
+**Variable Conversions**
+```{r warning=TRUE, message=FALSE, out.width='30%', fig.align = 'center'}
+# Change occupancy integers to factors
+BldgSensorTest$Occupancy <- as.factor(BldgSensorTest$Occupancy)
+BldgSensorTest2$Occupancy  <- as.factor(BldgSensorTest2$Occupancy)
+BldgSensorTraining$Occupancy  <- as.factor(BldgSensorTraining$Occupancy)
+
+BldgSensorTest$date <- as.POSIXct(BldgSensorTest$date, tz="UTC")
+BldgSensorTest2$date  <- as.POSIXct(BldgSensorTest2$date, tz="UTC")
+BldgSensorTraining$date  <- as.POSIXct(BldgSensorTraining$date, tz="UTC")
+
+# Create the xts (extensible time-series object) constructor function for dygraph (all variables)
+xts_1 <- xts(x = BldgSensorTraining$Temperature, order.by = BldgSensorTraining$date)
+xts_2 <- xts(x = BldgSensorTraining$Humidity, order.by = BldgSensorTraining$date)
+xts_3 <- xts(x = BldgSensorTraining$Light, order.by = BldgSensorTraining$date)
+xts_4 <- xts(x = BldgSensorTraining$CO2, order.by = BldgSensorTraining$date)
+xts_5 <- xts(x = BldgSensorTraining$HumidityRatio, order.by = BldgSensorTraining$date)
+xts_6 <- xts(x = BldgSensorTraining$Occupancy, order.by = BldgSensorTraining$date)
+```
+### Variables and Time-Series Plots 
+```{r warning=FALSE, message=FALSE, out.width='100%', fig.align = 'center'}
+# Assign variable names if they do not populate correctly
+date <- BldgSensorTraining$date
+Temperature <- BldgSensorTraining$Temperature
+Humidity <- BldgSensorTraining$Humidity
+Light <- BldgSensorTraining$Light
+CO2 <- BldgSensorTraining$CO2
+HumidityRatio <- BldgSensorTraining$HumidityRatio
+Occupancy <- BldgSensorTraining$Occupancy
+
+# p1=Temperature, p2=humidity, p3=light, p4=CO2, p5=humidity ratio, p6=occupancy
+p1 <- ggplot(xts_1,aes(date)) + 
+  geom_line(color="Black", aes(y=Temperature)) +
+  geom_area( fill="Red", aes(y=Temperature), alpha=0.4) +
+  ylab("Temp (°C)") +
+  xlab("Time") +
+  coord_cartesian(ylim = c(18, 23)) +
+  scale_x_datetime(breaks=date_breaks("4 hour"),labels=date_format("%H:%M"),
+  limits=as.POSIXct(c("2015-02-05 06:00","2015-02-10 06:00"),tz="GMT")) +
+  theme(text = element_text(size=5)) +
+  theme(axis.text.x = element_text(angle=90,hjust=1,size=6)) +
+  theme(axis.text.y = element_text(angle=0,hjust=1,size=6))
+
+p2 <- ggplot(xts_2,aes(date)) + 
+  geom_line(color="Black", aes(y=Humidity)) +
+  geom_area( fill="Blue", aes(y=Humidity), alpha=0.4) +
+  ylab("Humidity") + # % Water Vapor to Air
+  xlab("Time") +
+  coord_cartesian(ylim = c(18, 40)) +
+  scale_x_datetime(breaks=date_breaks("4 hour"),labels=date_format("%H:%M"),
+  limits=as.POSIXct(c("2015-02-05 06:00","2015-02-10 06:00"),tz="GMT"))+
+  theme(text = element_text(size=5)) +
+  theme(axis.text.x = element_text(angle=90,hjust=1,size=6)) +
+  theme(axis.text.y = element_text(angle=0,hjust=1,size=6))
+
+p3 <- ggplot(xts_3,aes(date)) + 
+  geom_line(color="Black", aes(y=Light)) +
+  geom_area( fill="#F0E442", aes(y=Light), alpha=0.4) +
+  ylab("Light-Lux") +
+  xlab("Time") +
+  coord_cartesian(ylim = c(0, 1600)) +
+  scale_x_datetime(breaks=date_breaks("4 hour"),labels=date_format("%H:%M"),
+  limits=as.POSIXct(c("2015-02-05 06:00","2015-02-10 06:00"),tz="GMT"))+
+  theme(text = element_text(size=5)) +
+  theme(axis.text.x = element_text(angle=90,hjust=1,size=6)) +
+  theme(axis.text.y = element_text(angle=0,hjust=1,size=6))
+  
+p4 <- ggplot(xts_4,aes(date)) + 
+  geom_line(color="Black", aes(y=CO2)) +
+  geom_area( fill="#009E73", aes(y=CO2), alpha=0.4) +
+  ylab("CO2 ppm") +
+  xlab("Time") +
+  coord_cartesian(ylim = c(400, 2200)) +
+  scale_x_datetime(breaks=date_breaks("4 hour"),labels=date_format("%H:%M"),
+  limits=as.POSIXct(c("2015-02-05 06:00","2015-02-10 06:00"),tz="GMT"))+
+  theme(text = element_text(size=5)) +
+  theme(axis.text.x = element_text(angle=90,hjust=1,size=6)) +
+  theme(axis.text.y = element_text(angle=0,hjust=1,size=6))
+
+p5 <- ggplot(xts_5,aes(date)) + 
+  geom_line(color="Black", aes(y=HumidityRatio)) +
+  geom_area( fill="#56B4E9", aes(y=HumidityRatio), alpha=0.4) +
+  ylab("Humidity Ratio") + # kgwater-vapor/kg-air
+  xlab("Time") +
+  coord_cartesian(ylim = c(.0025, .0065)) +
+  scale_x_datetime(breaks=date_breaks("4 hour"),labels=date_format("%H:%M"),
+  limits=as.POSIXct(c("2015-02-05 06:00","2015-02-10 06:00"),tz="GMT"))+
+  theme(text = element_text(size=5)) +
+  theme(axis.text.x = element_text(angle=90,hjust=1,size=6)) +
+  theme(axis.text.y = element_text(angle=0,hjust=1,size=6))
+
+p6 <- ggplot(xts_6,aes(date)) +
+  geom_line(color="Black",aes(y=as.numeric(Occupancy))) +
+  ylab("Occupancy") +
+  xlab("Time") +
+  scale_x_datetime(breaks=date_breaks("4 hour"),labels=date_format("%H:%M"),
+  limits=as.POSIXct(c("2015-02-05 06:00","2015-02-10 06:00"),tz="GMT"))+
+  theme(text = element_text(size=5)) +
+  theme(axis.text.x = element_text(angle=90,hjust=1,size=6)) +
+  theme(axis.text.y = element_text(angle=0,hjust=1,size=6))
+
+timeseries <- grid.arrange(p1, p2, p3, p4, p5, p6, nrow = 3,
+  top = "Time-Series Variables, 5 Day Duration",
+  bottom = textGrob("",gp = gpar(fontface = 3, fontsize = 5), hjust = 1, x = 1))
+``` 
+This initial time series analysis is very useful for analyzing the indoor environment during occupied periods during the week.  It is easy to understand the relationships of the unique variables, as well as examine some similarities.  The occupancy sensor indicates that the space was occupied on Monday, Tuesday, and Friday of the week.  It is also evident that CO2 levels raised when the space was occupied, as well as increased utilization of the lighting and HVAC systems.  The next step includes exploring this data to better understand the relationships between the variables using correlation and various cluster analysis methods.
+
+### Correlation Matrix - Sensor Relationships
+The strength and direction of a linear relationship between two variables can be measured using a correlation coefficient. The Pearson correlation coefficient takes a range of values from +1 to -1, indicating a higher correlation with a value closer to +1.
+
+**Pearson Correlation Coefficient formula:**
+$$r = \frac {n({\sum}_{xy})-({\sum}_{x})({\sum}_{y})}{\sqrt(n\sum_{x^2}-(\sum_{x^2}))(n\sum_{y^2}-(\sum_{y^2}))}$$ 
+Correlation is measured by $r$, where $n$ is the number of pairs of data and $x$ and $y$ are the sample means of x and y values.
+```{r warning=TRUE, message=FALSE, out.width='100%', fig.align = 'center', tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+# Correlation of Sensor Relationships
+BldgSensorTraining$Occupancy <- as.numeric(BldgSensorTraining$Occupancy)
+SensorData.corrplot = cor(BldgSensorTraining[2:7])
+cp <- corrplot.mixed(SensorData.corrplot, lower.col = "darkblue", order="hclust", number.cex = .7, tl.cex = .7, tl.col = "black")
+```
+This correlation matrix indicates that there are varying relationships between these variables, provided by the Euclidean distance.  The distance is shown on lower portion of the correlation plot (below the variable text), whereas the upper portion provides the size of the relationship that corresponds to the distance.  The higher the value that is indicated (lower), as well as the size of the circle (upper), indicates a stronger the relationship.  The highest-level relationships exist between Humidity and the Humidity Ratio, which we expect.  This is followed by Occupancy and Light, in which we can conclude that if someone is using occupying the space, they will most likely use the lighting system.  Using the previous time-series data, we also know that this is an artificial light source (electricity, and not daylighting), because the levels are not consistent for the duration, as well as the occupancy data supporting this conclusion.  At the lower end of the spectrum, we notice that there is a low level of correlation between light and humidity, which means that there is not a strong relationship between these factors.
+
+### Hierarchical Clustering Analysis (HCA)
+
+Observations provided by the characteristics of the variables can be measured to determine the similarity, or dissimilarity between them.  The clustering distance measurement calculates the similarity of the elements, which influences the shape of the clusters. 
+
+**The Euclidean Distance Formula is defined as:**
+$$d_{euc}(x,y)=\sqrt{\sum_{i=1}^{n}({x}_{i}-y_{i})^2}$$
+$n$ is the length, whereas $x$ and $y$ are vectors.  The programming within R allows us to compare a multitude of variables to one another.  There are a number of classical distance methods that can be used, such as the Manhattan, Spearman, and Kendall.  
+
+Hierarchical clustering analysis provides the ability to find relationships and build a hierarchy of clusters.  These fall into two types, either the Agglomerative, also known as AGNES (Agglomerative Nesting) approach, in which each observation begins their own cluster, and pairs are merged as you move up within the hierarchy using a bottom-up approach.  The second method is Divisive, also known as DIANA (Divise Analysis), in which a top-down approach is used and begins with one cluster and splits as you move down within the hierarchy.  AGNES is generally recommended for smaller clusters, while DIANA is used for large clusters.^60,61^  The Divisive method is used for this analysis and an algorithm (metric) is used to measure the dissimilarity between sets of observations.
+
+A variety of metrics can influence the shape of the cluster, some of which include the Euclidean, Manhatten, Maximum, Mahalanobis and others.  The linkage criteria also help determine the distance between the sets of observations using a function (formula) to determine the pairwise distance between the observations.
+
+In this first example, we will use the Euclidean distance for the metric, and the weighted average linkage clustering method.  The formula for the Euclidean method was previously shown, while the formula for the average linkage is shown below:
+
+**Average Linkage formula**
+$$d(i⋃j,k) = \frac {d(i,k) + d(j,k)}{2}$$
+$d$ is the distance measured between the two clusters as defined by the union(join) of $i$ and $j$, and $k$ divided by 2.^62^  
+
+### Dendrogram using the Euclidean method
+These cluster methods demonstrate various graphical methods to understand the hierarchical clusters within this dataset.  Three methods are shown, which use different strategies to identify relationships using dendrograms and a scatter plot.
+**Dendrogram - Nearest Neighbors**
+```{r warning=TRUE, message=FALSE, fig.align = 'center'}
+set.seed(123)
+# Modify objects
+BldgSensorTraining$Occupancy <- as.numeric(BldgSensorTraining$Occupancy)
+# Create Dataframe
+df <- data.frame(BldgSensorTraining[2:7])
+dfsample <- sample(df)
+dfscale <- scale(dfsample)
+distxy <- dist(dfscale)
+cluster <- hclust(distxy)
+
+# Plot Cluster Dendrogram
+plot(cluster, ylab = "Height", xlab="Distance")
+```
+Although there is a significant amount of density from the existing dataset, it may be also be sampled to obtain less results.  The important aspect to recognize is that there are relationships between these sensors that are recognized within this dataset.  Further analysis will begin to provide additional insights.
+
+The height of the dendrograms can be limited to better understand specific relationships, which will also help reduce the color density.  However, the scatter plot and heatmap provide additional information that is useful for cluster analysis.
+
+### Cluster Analysis Scatter Plot using k-means
+In this example we use k-means clustering, which defines clusters so that the variation is minimized.  Hartigan-Wong introduced the standard algorithm in 1979, which is defined as:
+
+$$W(C_{k})={\sum_{x_{i}∈C_{k}}}(x_{i} - μ_{k})^2$$
+Where $x_{i}$ is the data point associated with the cluster $C_{k}$, and $μ_{k}$ is the mean of the points assigned to $C_{k}$.  Each $x_{i}$ is assigned to a given cluster, so that the sum of squares distance of the observation to the cluster center $μ_{k}$ is minimized.  This is demonstrated in the k-means scatter plot below: 
+```{r warning=TRUE, message=FALSE, out.width='100%', fig.align = 'center'}
+df <- scale(BldgSensorTraining[2:7]) # dataframe
+EuclidDist2 <- dist(df, method = "euclidean")
+HierarchClust2 <- hclust(EuclidDist2, method = "average")
+kmeans_grp <- cutree(HierarchClust2, k = 6)
+fviz_cluster(list(data = BldgSensorTraining[2:7], cluster = kmeans_grp))
+```
+These clusters have been grouped using the k-means method, while subdividing the data into six clusters.  The clusters indicate that there are strong relationships between some groups and weak relationships between others.  The heatmap will further help visualize the variable relationships and their strength to one another. 
+
+### Heatmap
+Heatmaps provide the ability to visualize clusters of samples and features.  In this heatmap we can easily understand the relationships between the variables, which uses the Euclidean method as well. 
+```{r warning=TRUE, message=FALSE, fig.align = 'center'}
+BldgSensorTraining$Occupancy <- as.numeric(BldgSensorTraining$Occupancy)
+df <- scale(BldgSensorTraining[2:7])
+heatmap.2(df, scale = "none", col = bluered(100), margins=c(9,4) ,
+          trace = "none", density.info = "none", cexRow=0.2)
+```
+The dendrograms within this heatmap (top and right side) show strong(red) and weak(blue) relationships between variables.  These relationships indicate that some variables do not have strong relationships with other variables, while others have strong relationships with others.  The dendrogram at the top of the heatmap indicates that humidity and temperature do not have a strong relationship (in the climate in which this was analyzed), however once this initial split has been determined, it is evident that humidity and the humidity ratio have a strong relationship, and the right side of the branches, we can see that the CO2, Occupancy, and Light variables have a strong relationship, and collectively these variables are more closely associated with temperature.  Furthermore, the color scheme indicates that there are more strong relationships between the humidity variables, while less strong relationships within the remaining variables.  This analysis is also supported with the cluster analysis and correlation that was previously explored.
+
+### Analyzing the Data
+Now that we have a better understanding of the data using time-series, correlation, and various clustering methods, we can more easily make some decisions to increase efficiency.
+
+Initially, we can conclude that this space was occupied on Monday, Tuesday, and Friday by both the Occupancy and CO2 sensor data which is easy to understand within the time-series visualization.  Furthermore, it appears that on there were days that lights and HVAC systems were used without anyone in the space to enjoy these services.  Considering the correlation data, we notice that there are strong relationships between Humidity and the Humidity Ratio variables, as well as CO2 and occupancy.  The cluster analysis supports this analysis, which can be more easily understood in the heatmap with the strength between these relationships.  Let's further explore this data with machine learning algorithms to understand accuracy measurements.
+
+# Machine Learning - Supervised Learning Strategies enabling More Accurate Predictions
+The initial unsupervised learning techniques using various data science strategies indicate that there is a high correlation between occupancy, light, the humidity ratio, and CO2.  If we were in a position to make a cost-effective solution for a building system, and wanted to reduce the number of sensors required, while maintaining a high level of accuracy for data analysis, let's utilize a few machine learning tasks to determine if a single sensor (i.e. CO2), or combination of sensors can provide an acceptable level of accuracy.  The results from this machine learning task will enable the ability to use a single sensor or combination of multiple sensors for occupancy detection, as well as signaling lighting and HVAC systems to activate or deactivate when spaces were not in use. (we will not get into the engineering of this task, rather focus on machine learning)
+
+This task will include utilizing five different types of supervised machine learning algorithms to determine which one can provide the highest level of accuracy.  These include Linear Discriminant Analysis (LDA), Quadratic Discriminant Analysis (QDA), Random Forest (RF), Classification and Regression Trees (CART), and k-nearest neighbors (kNN).
+
+## Linear Discriminant Analysis (LDA)
+Linear discriminant analysis assumes that the correlation structure is the same for all classes, which reduces the number of parameters necessary for estimation. 
+
+**LDA Accuracy**
+```{r warning=TRUE, message=FALSE, fig.align = 'center', tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+set.seed(123)
+# Define variables
+BldgSensorTraining$Occupancy <- as.factor(BldgSensorTraining$Occupancy)
+Occupancy <- BldgSensorTraining$Occupancy
+
+# BldgSensorTraining <- read.table("01Data/11-BldgSensorTraining.csv",header=TRUE,sep=",")
+
+## LDA-All variables
+LDA_all_var <- train(Occupancy~.-date,method="lda",data=BldgSensorTraining)
+LDA_all_var
+# LDA_all_var$finalModel # data stats
+## LDA-CO2 only
+LDA_CO2 <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                 -Light,method="lda",data=BldgSensorTraining)
+LDA_CO2
+## LDA-CO2 and Light
+LDA_CO2_light <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                       ,method="lda",data=BldgSensorTraining)
+LDA_CO2_light
+```
+**LDA Accuracy Results**
+*  All Variables: 0.988
+*  CO2 only: 0.885 
+*  Co2 and light: 0.976
+
+## Quadratic Discriminant Analysis (QDA)
+Quadratic discriminant analysis is a version of Naive Bayes.  In a binary case, the smallest true error is determined by the Bayes' rule, which is based on the true conditional probability, and is expressed as:
+
+$$p(x) = Pr(Y = 1 | X = x) = \frac {f_{X|y=1}(x)Pr(Y = 1)}{f_{X|y=0}Pr(Y = 0)+f_{X|y=1}(X)Pr(Y = 1)}$$
+$f_{X|y=1}$ and $f_{X|y=0}$ represent the distribution functions of the predictor $X$ for the two classes $Y$=1 and $Y$=0.  The formula implies that we can estimate the conditional distribution of the predictors and develop a powerful decision rule.  We assume that $P_{X|y=1}(x)$ and $P_{X|y=0}(x)$ are multivariate normal.  Let's see how QDA performs:
+```{r warning=TRUE, message=FALSE, fig.align = 'center'}
+## QDA-All variables
+QDA_all_var <- train(Occupancy~.-date,method="qda",data=BldgSensorTraining)
+QDA_all_var
+## QDA-CO2 only
+QDA_CO2 <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                 -Light,method="qda",data=BldgSensorTraining)
+QDA_CO2
+## QDA-CO2 and Light
+QDA_CO2_light <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                       ,method="qda",data=BldgSensorTraining)
+QDA_CO2_light
+```
+**QDA Accuracy Results**
+*  All Variables: 0.988 
+*  CO2 only: 0.902
+*  Co2 and light: 0.983
+
+## Random Forest (RF)
+Random forests are effective at making predictions and reduce instability by averaging multiple decision trees. This is accomplished by bootstrap aggregation (bagging), which generates many predictors (regression or classification trees), then forming a final prediction on the average prediction.  Secondarily, to ensure that no two trees are the same, the bootstrap method makes the trees randomly different.  Let's see how the random forest algorithm performs: 
+```{r warning=FALSE, message=FALSE, fig.align = 'center'}
+## Random Forest-CO2 only
+randforest_all_var <- train(Occupancy~.-date,method="rf",data=BldgSensorTraining)
+randforest_all_var
+## Random Forest-CO2
+randforest_CO2 <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                            -Light,method="rf",data=BldgSensorTraining)
+randforest_CO2
+## Random Forest-CO2 & Light
+randforest_CO2_light <- train(Occupancy~.-date-Humidity-HumidityRatio
+                              ,method="rf",data=BldgSensorTraining)
+randforest_CO2_light
+```
+**Random Forest Accuracy Results**
+
+*  All Variables: 0.993
+*  CO2 only: 0.894
+*  Co2 and light: 0.994
+
+## Classification and Regression Trees (CART)
+Classification trees are used to make predictions when the outcome is categorical.  Partitioning accounts for differences while working with categorical outcomes.  Predictions are made by calculating which class is the most common among the training set observations within the partition.  Let's see how the CART algorithm performs: ^63^
+```{r warning=TRUE, message=FALSE, fig.align = 'center'}
+## CART-All variables
+CART_all_var <- train(Occupancy~.-date,method="rpart",data=BldgSensorTraining)
+CART_all_var
+## CART-CO2 only
+CART_CO2 <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                  -Light,method="rpart",data=BldgSensorTraining)
+CART_CO2
+## CART-CO2 and Light
+CART_CO2_light <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                        ,method="rpart",data=BldgSensorTraining)
+CART_CO2_light
+```
+**Classification and Regression Trees Results**
+*  All Variables: 0.989
+*  CO2 only: 0.921
+*  Co2 and light: 0.988
+
+## k-nearest neighbors (kNN)
+kNN can adapt to multiple dimensions, initially by defining the distances between observations, then for any point $(x_{1},x_{2})$ in which we estimate $(x_{1},x_{2})$, we look for the k nearest points to $(x_{1},x_{2})$, then take an average of the 0s and 1s, which is used to compute the average (known as the neighborhood).^58^  Let's see how the k-nearest neighbors algorithm performs:
+```{r warning=TRUE, message=FALSE, fig.align = 'center'}
+## KNN-All variables
+KNN_all_var <- train(Occupancy~.-date,method="knn",data=BldgSensorTraining)
+KNN_all_var
+## KNN-CO2 only
+KNN_CO2 <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                 -Light,method="knn",data=BldgSensorTraining)
+KNN_CO2
+## KNN-CO2 and Light
+KNN_CO2_light <- train(Occupancy~.-date-Humidity-Temperature-HumidityRatio
+                       ,method="knn",data=BldgSensorTraining)
+KNN_CO2_light
+```
+**k-nearest neighbors Accuracy Results**
+*  All Variables: 0.988
+*  CO2 only: 0.910
+*  Co2 and light: 0.987
+
+## Building Sensor Results from the Data Science
+
+### Accuracy Measurements using Methods Previously Demonstrated for All Variables
+
+The following section indicates the accuracy measurement followed by graphical visualizations that indicate the performance for all of the previous measurements.
+```{r warning=TRUE, message=FALSE, fig.align = 'center'}
+results <- resamples(list(LDA=LDA_all_var, QDA=QDA_all_var, 
+                          RF=randforest_all_var, CART=CART_all_var, 
+                          KNN=KNN_all_var))
+summary(results)
+# Box and whisker plot
+scales <- list(x=list(relation="free"), y=list(relation="free"))
+bwplot(results, scales=scales, title='All Variables')
+
+# Density plot
+scales <- list(x=list(relation="free"), y=list(relation="free"))
+densityplot(results, scales=scales, title='All Variables')
+
+# parallel plots to compare models
+parallelplot(results, title='All Variables')
+
+# pair-wise scatterplots of predictions to compare models
+splom(results,pscales = 0)
+```
+### Two Variable Accuracy (CO2 and Light)
+
+This data shows how the variables compared with one another to determine accuracy for two variables, including both the CO2 and light sensors.
+```{r warning=TRUE, message=FALSE, fig.align = 'center', tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+results2 <- resamples(list(LDA=LDA_CO2_light, QDA=QDA_CO2_light, RF=randforest_CO2_light, CART=CART_CO2_light, KNN=KNN_CO2_light))
+summary(results2)
+
+# Box and whisker plot
+scales2 <- list(x=list(relation="free"), y=list(relation="free"))
+bwplot(results2, scales=scales2)
+
+# Density plot
+densityplot(results2, scales=scales2)
+
+# parallel plots to compare models
+parallelplot(results2)
+
+# pair-wise scatterplots of predictions to compare models
+splom(results2,pscales = 0)
+```
+
+### Accuracy Measurements for the CO2 Sensor Variable
+
+The following section indicates the accuracy measurement followed by graphical visualizations that indicate the performance for all of the CO2 sensor exclusively.
+
+```{r warning=TRUE, message=FALSE, fig.align = 'center'}
+results3 <- resamples(list(LDA=LDA_CO2, QDA=QDA_CO2, 
+                           RF=randforest_CO2, CART=CART_CO2, KNN=KNN_CO2))
+summary(results3)
+# Box and whisker plot
+scales3 <- list(x=list(relation="free"), y=list(relation="free"))
+bwplot(results3, scales=scales3, title='One Variable')
+
+# Density plot
+densityplot(results3, scales=scales3, title='One Variable')
+
+# parallel plots to compare models
+parallelplot(results3, title='One Variable')
+
+# pair-wise scatterplots of predictions to compare models
+splom(results3,pscales = 0)
+```
+
+### Machine Learning and Data Science Results
+
+*  **All Variables:** Classification and Regression Trees with a 98.9% accuracy 
+*  **Co2 and light:** Classification and Regression Trees, tied with kNN with a 98.8% accuracy
+*  **CO2 only:** Classification and Regression Trees with a 92.1% accuracy
+
+The accuracy results from these machine learning algorithms are indicative that the building system sensors can be used in different combinations to detect space occupancy, which can lead to more effective control of spaces.  A few takeaways from this exhaustive sensor analysis:  
+
+*  If an occupancy sensor is not required for an area, the combination of the CO2 and light sensor can perform the nearly the same level of accuracy for detecting occupancy. (98.8/98.9 = 99.9% detection)
+*  If an occupancy sensor is used predominantly as to activate lighting and HVAC systems, the CO2 and light sensor could provide a secondary approval for activating the systems.  
+*  If an occupancy sensor is not operating correctly, the combination of CO2 and light sensors could be used as the primary source for activating prescribed systems.
+
+# Leveraging Data Science Insights and Opportunities
+The final section of this publication seeks to incorporate the data previously explored, including ASHRAE building data, technology maturity, interior sensor data, and energy saving initiatives.
+
+The building data reveals a significant amount of usage for various building types during periods of the day.  We can infer from the occupancy data that there is an opportunity to decrease energy consumption by using a combination of one or more occupancy sensors.
+
+We do not have sufficient information to determine detailed information for building occupancy and usage from the ASHRAE data set, or if the buildings are operating efficiently with the existing building systems.  However, we can utilize this data set and assume that there is a collective 20% opportunity for improving energy efficiency, considering a 10-40% energy savings for HVAC and lighting.^56^  Utilizing this particular sensor data set, this opportunity for efficiency improvement is attributed to lighting and HVAC systems remaining in an operable condition when spaces are unoccupied.  
+
+Considering these energy saving opportunities, let's see what a 30% decrease in energy is equivalent to for electricity use, economic value, and environmental impact.
+
+**Total Energy Use from ASHRAE Dataset:**
+```{r warning=TRUE, warning=FALSE}
+options(digits=15)
+bldg_data_train <- read.csv("01Data/06-ASHRAE_Energy_training_data.csv")
+totalenergyuse <- read.csv("01Data/06-ASHRAE_Energy_training_data.csv")
+totalenergyuse <- building_data$meter_reading
+sum(totalenergyuse)
+```
+
+```{r warning=TRUE, warning=FALSE}
+# Verify Data Integrity Step
+# Create data table to verify results in separate program, filter rows
+# EnergyRow1 <- read.csv("01Data/06-ASHRAE_Energy_training_data.csv") %>% slice(1:100000)
+# str(EnergyRow1)
+# sum(EnergyRow1$meter_reading)
+# write.csv(EnergyRow1, "01Data/meter_only_r1.csv")
+# Verify the results
+```
+This data indicates that the total energy use from 1,448 buildings is consuming 42,799,931,389 kilowatts-hours of electricity annually. Now, we will incorporate building systems efficiency metrics for a 30% improvement and determine the energy saving result.
+
+**Optimized Building System:**
+```{r warning=TRUE, warning=FALSE}
+newenergyuse <- sum(totalenergyuse) * .7
+newenergyuse
+
+savingsenergy <- sum(totalenergyuse) - newenergyuse
+savingsenergy
+```
+With an optimized building system, this performance improvement would amount to 29,959,951,972 kWh of energy consumption, while saving 12,839,979,417 kWh of electricity annually. 
+
+In support of the financial savings, we will use the average retail rate for electricity, which is currently an average of 10.59 cents per kWh in the United States.^64^  
+
+**Economic Performance**
+The financial savings associated with a 30% decrease of energy consumption would amount to:
+```{r warning=TRUE, warning=FALSE}
+currentenergycost <- sum(totalenergyuse) * .1059
+currentenergycost
+
+newenergycost <- sum(totalenergyuse) * .7 * .1059
+newenergycost
+
+savingsenergycost <- sum(totalenergyuse) * .3 * .1059
+savingsenergycost
+```
+These building owners are cumulatively paying an average total of 4,532,512,734 USD for electricity a year.  With a 30% efficiency improvement, the new total is 3,172,758,914 USD, with a savings of 1,359,753,820 USD annually.  That's a significant amount of savings, however there is also an investment cost associated with building systems implementation and lifecycle support which is not discussed within this report.
+
+**Emissions Use and Reduction**
+The ASHRAE dataset provides a substantial information about building energy usage.  Although it is difficult to understand the specific electricity type and carbon footprint used for each building, we can infer that there is a percentage of emissions created from energy consumption.
+
+The U.S. Environmental Protection Agency (EPA) has produced the Emissions & Generation Resource Integrated Database (eGRID).  This database is a resource which provides information about annual emission rate estimates from various sources.^65^
+
+There are a multitude of formulas associated with emission rates from various sources.  The objective we seek to determine is quantifying the environmental impact for CO2, CH4, and N2O reduction from saving energy.
+
+The U.S. Environmental Protection Agency (EPA), as well as NOAA provide a resource for calculating Greenhouse Gas Equivalencies.^66,67^  Although we have the ability to calculate some of these values, it is difficult to determine specific emissions from specific buildings, as well as their source of energy.  With many variables to consider, a general approach includes the following process:
+
+1. Determine the amount of energy consumed from the sample (previously calculated from the ASHRAE dataset)
+2. Determine the energy portfolio of the location (in this instance, we will utilize the United States energy consumption distribution, which has previously been determined).  If the country does not have enough fossil fuels to reduce, the energy saving opportunities will not matter for this study.  In this case, the United States does produce enough fossil fuel emissions to offset the carbon footprint.
+3. Utilize the carbon emitting resources to determine the ability to reduce that energy source (Oil, Coal, and Gas)
+4. Calculate the CO2 reduction
+
+Let's begin with this process, while providing the values from previously obtained datasets:
+```{r warning=TRUE, warning=FALSE}
+# Step 1: Total Energy Consumption from ASHRAE meter readings dataset
+sum(totalenergyuse)
+```
+
+```{r warning=TRUE, warning=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+# Steps 2,3: Total Energy Use from country.  United States had the following total energy consumption from fossil fuels for the year that the data was processed. Work cited reference [14]
+UScoal2016 <- 12262 #kWh
+USOil2016 <- 30839 #kWh
+USGas2016 <- 23191 #kWh
+USFossil2016 <- sum(UScoal2016, USOil2016, USGas2016)
+USFossil2016 #Total kWh
+# 66292 kWh total fossil
+# 78367 kWh all sources
+```
+The last portion of this analysis includes calculating the CO2 reduction.  Although there are many resources to perform these measurements, the US Environmental Protection Agency (EPA) has introduced the Greenhouse Gases Equivalencies Calculator, which also provides a resource to double-check the results.  The savings in energy has a direct relationship to the reduction of C02 emissions.
+
+```{r warning=TRUE, warning=FALSE}
+# Step 4: CO2 reduction calculation
+# kWh(data) * Emission Ratio (0.000432594303)
+EmissionRatio <- 0.000432594303
+C02Reduction <- savingsenergy * EmissionRatio
+C02Reduction
+```
+That is a significant amount of savings with energy cost, economically, and with greenhouse emissions, and very evident with the science of data!  Taking a long-term approach with energy conservation efforts would result in additional benefits from C02 reduction, such as longer lifespans and lower healthcare expenses.
+
+# Results and Conclusion
+This deep dive into many data sets using a multitude of data science, analytics, and other processes provided the ability to explore and find solutions for environmental, energy, infrastructure, regulatory controls, and incentives.
+
+Although there was a general approach taken with this analysis, it does provide a great understanding of the problem and how to address solutions, whether they be small or large scale.  This small dataset could also be implemented nationally or globally for a greater reach and impact.
+
+## Limitations
+There were several limitations for this analysis:
+
+*  Difficult to distinguish which buildings were sourced from which energy sources, which would provide the ability to analyze both CH4 and N02
+*  Unknown information whether buildings have building control systems to manage energy use (i.e. occupancy sensors)
+
+## Future Work
+There are a multitude of directions that this analysis can lead to.  Some of these include:
+
+*  Increased use of existing and seeking new sustainable energy sources
+*  Additional types of building and site controls, such as access control, which could identify when the entire building is unoccupied to disable energy sources as required
+*  Cyber security to better address threats to energy systems, computing systems, and building control systems
+*  Integration of new technologies and additional types of solutions to address energy and environmental needs.  Additional controls for site devices, such as occupancy for exterior lighting, controls to better manage mechanical systems for heating/cooling schedules
+*  New policies and incentives to promote environment, energy, and systems controls
+
+# References and Works Cited{-}
+1.    Allen and J. Macomber, Healthy buildings. Cambridge, Mass: Harvard University Press, 2020.
+1.    "Quadrennial Technology Review 2015", energy.gov, 2015. [Online]. Available: https://www.energy.gov/quadrennial-technology-review-2015.
+1.    MacFarling Meure, C., D. Etheridge, C. Trudinger, P. Steele, R. Langenfelds, T. van Ommen, A. Smith, and J. Elkins. 2006. Law Dome CO2, CH4 and N2O Ice Core Records Extended to 2000 years BP. Geophysical Research Letters, 33(14), L14810. DOI: 10.1029/2006GL026152. [Online]. Available: https://www.ncei.noaa.gov/access/paleo-search/study/9959. Dataset: Greenhouse gases. Parameters: year, gas, concentration. 
+1.    Global Monitoring Laboratory - Carbon Cycle Greenhouse Gases. (2022).  U.S. Department of Commerce, National Oceanic & Atmospheric Administration.   [Online]. Available: https//gml.noaa.gov/ccgg/trends/data.html Dataset: Historic C02. Parameters: year, CO2, source.  
+1.    National Oceanic & Atmospheric Administration (NOAA), National Centers for Environmental Information (NCEI).  “Antarctic Ice Cores Revised 800KYr CO2 Data.” [Online]. Available: https://www.ncei.noaa.gov/access/paleo-search/study/17975.  Dataset: Historic CO2. Parameters: year, temp_anomaly, land_anomaly, ocean_anomaly  carbon_emissions.  
+1.    "Climate change and health", who.int, 2021.     [Online]. Available: https://www.who.int/news-room/fact-sheets/detail/climate-change-and-health. 
+1.    "Greenhouse gases pose threat to public health", News, 2021.     [Online]. Available: https://www.hsph.harvard.edu/news/features/bernstein-greenhouse-gases-health-threat/. 
+1.    "Human Health Impacts of Climate Change", National Institute of Environmental Health Sciences, 2022. [Online]. Available: https://www.niehs.nih.gov/research/programs/climatechange/health_impacts/index.cfm. 
+1.    “Ecological effects of nitrogen and sulfur air pollution in the US: What do we know?” Scientific Figure on ResearchGate. [Online]. Available: https://www.researchgate.net/figure/Simplified-diagram-of-the-ecological-effects-caused-by-nitrogen-and-sulfur-air-pollution_fig3_233586473 A. 
+1.    Terando. et al., "Using information from global climate models to inform policymaking—The role of the U.S. Geological Survey", U.S. Geological Survey, 2020. [Online]. Available: https://doi.org/10.3133/ofr20201058. 
+1.    P. Friedlingstein, et al., “Global Carbon Budget 2020”, Earth System Science Data, Volume 12 (Issue 4 ESSD, 12, 3269–3340, 2020. [Online]. Available: https://doi.org/10.5194/essd-12-3269-2020.
+1.    [04DATASOURCE] [7]"Data supplement to the Global Carbon Budget 2021", Meta.icos-cp.eu, 2021.     [Online]. Available: https://meta.icos-cp.eu/collections/88n-9-M7vk8jkXShAKj0RVL_. Dataset:  Fossil Emissions by Category. Parameters: Year, fossil.emissions, , Coal, Oil, Gas, Cement.emission, Flaring, Other, Per.Capita. 
+1.    H. Ritchie, et al. “Energy: Per capita primary energy consumption by source, 2021”, Our World in Data, 2021.     [Online]. Available: https://ourworldindata.org/energy. 
+1.    [05DATASOURCE] BP Statistical Review of World Energy ; Vaclav Smil (2017), Energy Transitions: Global and National Perspectives, 2nd edition, Appendix A. [Online]. Available: https://www.bp.com/en/global/corporate/energy-economics/statistical-review-of-world-energy.html.  Dataset: World Energy use, total and United States.  Parameters: year, coal, oil, gas, nuclear, hydropower, wind, solar, otherrenewables.  
+1.    “U.S. energy facts explained - consumption and production”, U.S. Energy Information Administration (EIA). eia.gov, 2021.     [Online]. Available: https://www.eia.gov/energyexplained/us-energy-facts.
+1.    K. O’Rielly, and J. Jeswiet. “Strategies to Improve Industrial Energy Efficiency.” Procedia CIRP, vol. 15, 2014, pp. 325–330., DOI:10.1016/j.procir.2014.06.074.
+1.    “Codes & Standards”, International Code Council, 2022. International Code Council. https://www.iccsafe.org/products-and-services/codes-standards/.
+1.    “European and International Standards Online Store”, 2022. [Online]. Available: https://www.en-standard.eu.
+1.    “Solutions for a Renewable-Powered Future”, International Renewable Energy Agency (IRENA), 2022. [Online]. Available: https://irena.org/innovation/Solutions-for-a-Renewable-Powered-Future 
+1.    “Goal 7: Affordable and Clean Energy”, United Nations Sustainable Development Goals, 2022. [Online]. Available: https://www.un.org/sustainabledevelopment/blog/category/energy/.
+1.    P. Chapman. “2030-challenge – Architecture 2030”, architecture2030.org, 2015. [Online]. Available:  https://architecture2030.org/2030_challenges/2030-challenge/.
+1.    “LEED rating system | U.S. Green Building Council”, U.S. Green Building Council, 2022. usgbc.org. [Online]. Available:  https://www.usgbc.org/leed.
+1.    “ANSI/ASHRAE/IES Standard 90.1-2019 -- Energy Standard for Buildings Except Low-Rise Residential Buildings”, American Society of Heating, Refrigerating and Air-Conditioning Engineers (ASHRAE), 2019. [Online]. Available:  https://ashrae.org/technical-resources/bookstore/standard-90-1.    
+1.    “Energy Efficient Products for Consumers”, EnergyStar, 2022. energystar.gov. Energy Star. [Online]. Available:  https://www.energystar.gov/products.
+1.    “(Still) learning from Toyota”, McKinsey Quarterly, McKinsey & Company, 2014 [Online]. Available:  https://www.mckinsey.com/industries/automotive-and-assembly/our-insights/still-learning-from-toyota.
+1.    T. System, "Toyota Production System – Lean Manufacturing and Six Sigma Definitions", Leansixsigmadefinition.com, 2022. [Online]. Available: https://www.leansixsigmadefinition.com/glossary/toyota-production-system/. 
+1.    “About Caterpillar”, Caterpillar, 2022.  [Online]. Available: https://caterpillar.com/en/company.html.
+1.    “Supply Chain Frontiers #49: Six Supply Chain Options for Strategic Alignment.” Center for Transportation and Logistics, Massachusetts Institute of Technology (MIT), 2013. [Online]. Available: https://ctl.mit.edu/pub/newsletter/supply-chain-frontiers-49-six-supply-chain-options-strategic-alignment.
+1.    “A More Sustainable Supply Chain,” Harvard Business Review, Harvard Business School (HBS), 16 Nov. 2020, 2020. [Online]. Available: https://hbr.org/2020/03/a-more-sustainable-supply-chain.
+1.    “About the Responsible Business Alliance,” Responsible Business Alliance, 2022.  [Online]. Available: https://responsiblebusiness.org/about/rba/.
+1.    K. Pickard. “Commitment: Measuring Industry Progress Toward 2030,” AIA 2030 Commitment, Measuring Industry Progress Toward 2030, no. 2, May 2012, 2012. [Online]. Available: bdcnetwork.com/sites/bdc/files/aiab094805(2).pdf.
+1.    “EnergyPro”, EnergySoft, 2022. [Online]. Available: https://energysoft.com/.
+1.    “EnergyPlus”, National Renewable Energy Laboratory (NREL), Building Technologies Office, US Department of Energy, 2022. [Online]. Available:  https://energyplus.net/.
+1.    “About IES”, Integrated Environmental Solutions Limited, 2022.  [Online]. Available:   https://www.iesve.com/about.
+1.    “The R Project for Statistical Computing.” R, 2022. [Online]. Available:  https://r-project.org/.
+1.    “Welcome to Python.” Python, 2022. [Online]. Available:  https://python.org/.
+1.    F. De Luca, T. Dogan and A. Sepúlveda, "Reverse solar envelope method. A new building form-finding method that can take regulatory frameworks into account", Automation in Construction, vol. 123, no. 2021, p. 103518, 2021.     Available: 10.1016/j.autcon.2020.103518.
+1.    “Annual Energy Outlook 2020”, U.S. Energy Information Administration - EIA - Independent Statistics and Analysis, 2020.   [Online]. Available:  https://eia.gov/outlooks/aeo/. Dataset: Commercial Purchased Electric Intensity. Parameters: type, water_heating, cooking space_heating, lighting, ventilation space_cooling, refrigeration, computers_and_office_equipment, other_uses. 
+1.    “Materials for Sustainability”, Materials for Sustainability, Stanford Engineering, 2020.   [Online]. Available:  https://mse.stanford.edu/research-impact/research-overview/materials-sustainability.
+1.    Gallagher, Mary Beth. “The Race to Develop Renewable Energy Technologies.” MIT News | Massachusetts Institute of Technology, Massachusetts Institute of Technology (MIT), 18 Dec. 2019, https://news.mit.edu/2019/race-develop-renewable-energy-technologies-1218.
+1.    Becker, T.J. “Georgia Institute of Technology.” Georgia Tech's Research Horizons Magazine, Georgia Tech, 31 Dec. 2020,  https://rh.gatech.edu/features/12-emerging-technologies-may-help-power-future.
+1.    "Electricity Markets, Grid Security and Resilience", gao.gov, 2022. [Online]. Available: https://www.gao.gov/electricity-markets-grid-security-and-resilience.
+1.    [ORIGINAL 43]Zappa, Michell. “17 Emerging Energy Technologies That Will Change the World.” Business Insider, Business Insider, 24 Apr. 2014, https://businessinsider.com/17-emerging-energy-technologies-2014-4.
+1.    [ORIGINAL 45]“NIST Framework and Roadmap for Smart Grid Interoperability Standards, Release 3.0”, National Institute of Standards and Technology, 2016. [Online]. Available:  https://nist.gov/smartgrid/framework3.cfm.
+1.    [ORIGINAL 46]“Security and Privacy Controls for Information Systems and Organizations”, United States, Congress, National Institute of Standards and Technology Joint Task Force, Special Publication (NIST SP) - 800-53rev5, 2020.
+1.    [ORIGINAL 49] Routing in Multi-Channel Multi-Interface IEEE 802.11s Networks - Scientific Figure on ResearchGate. [Online]. Available: https://www.researchgate.net/figure/IEEE-80211s-Mesh-Network-Architecture_fig1_268687031
+1.    [ORIGINAL 46]M. Chipley. “Cybersecurity”, Whole Building Design Guide - Cybersecurity, Whole Building Design Guide (WBDG), 2020. [Online]. Available: wbdg.org/resources/cybersecurity.
+1.    [ORIGINAL 47]Wong, Johnny, et al. “Evaluating the System Intelligence of the Intelligent Building Systems.” Automation in Construction, vol. 17, no. 3, Mar. 2008, pp. 284–302., 2008. DOI:10.1016/j.autcon.2007.06.002. [Online]. Available: https://www.researchgate.net/publication/223403838_Evaluating_the_system_intelligence_of_the_intelligent_building_systems_Part_2_Construction_and_validation_of_analytical_models
+1.    Robert Markowitz, NASA, Public domain, via Wikimedia Commons
+o	https://commons.wikimedia.org/wiki/File:ISS_Flight_Control_Room_2006.jpg
+1.    “OSI Model Reference Chart”, Cisco, 2021.     [Online]. Available: https://learningnetwork.cisco.com/s/article/osi-model-reference-chart.
+1.    Daissaoui, A, et al. “IoT and Big Data Analytics for Smart Buildings: A Survey”, Journal of Ubiquitous Systems & Pervasive Networks, vol. 13, no. 1, 2020, pp. 27–34., DOI:10.5383/juspn.13.01.    004.
+1.    “COBIT 5 Framework Publications | ISACA”, Information Systems Audit and Control Association (ISACA), 2022. [Online]. Available: https://www.isaca.org/resources/cobit/cobit-5. 
+1.    “Health Information Privacy”, U.S. Department of Health and Human Services (HHS). 2022. [online] Available at: https://www.hhs.gov/hipaa/index.html.
+1.    [ORIGINAL 44]Miller, Clayton, et al. “The ASHRAE Great Energy Predictor III Competition: Overview and Results.” ArXiv.org, 14 July 2020, arxiv.org/abs/2007.06933. [Online]. Available: https://kaggle.com/c/ashrae-energy-prediction/data.  Primary Dataset: Commercial Purchased Electric Intensity.  Dataset[1]: ASHRAE Electric Meter Data. Parameters: building ID, meter, timestamp, meter_reading.  Dataset[2]: Building Information Metadata. Parameters: site_id, building_id, primary_use, square_feet,year_built, floor_count.  Dataset[3]: Weather Data. Parameters: site_id, timestamp, air_temperature, cloud_coverage, dew_temperature, precip_depth_1_hr, sea_level_pressure, wind_direction, wind_speed.  
+1.    L. Candanedo, V. Feldheim. “Accurate occupancy detection of an office room from light, temperature, humidity and CO2 measurements using statistical learning models”, Energy and Buildings. Volume 112, 15 January 2016, Pages 28-39.  Dataset: Building Sensors. Parameters: date, Temperature, Humidity, Light, CO2, HumidityRatio, Occupancy.
+1.    “Innovations in Sensors and Controls for Building Energy Management: Research and Development Opportunities Report for Emerging Technologies”, United States, Congress, Building Technologies Office (BTO), Energy Efficiency & Renewable Energy, 2020.
+1.    Nguyen, Tuan Anh, and Marco Aiello. “Energy Intelligent Buildings Based on User Activity: A Survey.” Energy and Buildings, vol. 56, 2013, pp. 244–257., DOI:10.1016/j.enbuild.2012.09.005.
+1.    A. Williams, et al. “Quantifying National Energy Savings Potential of Lighting Controls in Commercial Buildings.” ACEEE Summer Study on Energy Efficiency in Buildings, 3-393–404, 2012.
+1.    A. Ghahramani. “A Knowledge-Based Approach for Selecting Energy-Aware and Comfort-Driven HVAC Temperature Set Points,” Energy and Buildings, 85: 536-548, 2014.
+1.    Rokach, Lior, and Oded Maimon. "Clustering methods." Data mining and knowledge discovery handbook. Springer US, 2005. 321-352.
+1.    “Hierarchical Cluster Analysis.” Hierarchical Cluster Analysis · UC Business Analytics R Programming Guide, University of Cincinnati, uc-r.github.io/hc_clustering#kmeans_clustering.
+1.    “Clustering Methods.” SAS/STAT(R) 9.2 User's Guide, Second Edition, SAS Institute Inc., 30 Apr. 2010, 2010.  [Online]. Available: https://sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm #statug_cluster_sect012.htm.
+1.    Irizarry, R.. “Introduction To Data Science”, Rafalab.github.io, 2019. [Online]. Available: <rafalab.github.io/dsbook>.
+1.    “U.S. Energy Information Administration - EIA - Independent Statistics and Analysis.”  State Electricity Profiles - Energy Information Administration, 2022. .  [Online]. Available: https://eia.gov/electricity/state/.
+1.    "Summary Data | US EPA", United States Environmental Protection Agency, 2022. [Online]. Available: https://www.epa.gov/egrid/summary-data.
+1.    "Greenhouse Gases Equivalencies Calculator - Calculations and References | US EPA", United States Environmental Protection Agency, 2022. [Online]. Available: https://www.epa.gov/energy/greenhouse-gases-equivalencies-calculator-calculations-and-references.
+1.    "Greenhouse Gas Equivalencies Calculator", National Oceanic and Atmospheric Administration, 2022. [Online]. Available: https://www.climate.gov/teaching/resources/greenhouse-gas-equivalencies-calculator. 
+
+**Keywords:**
+American Institute of Architects (AIA); American Society of Heating, Refrigerating and Air-Conditioning Engineers (ASHRAE); analytics; architecture; average linkage; big data; building energy modeling; building survey; building occupancy; building systems; carbon dioxide modeling; Classification and Regression Trees (CART); climate change; cluster analysis; communications; correlation; cyber security; cyber-physical systems; data analysis; data science; dendrogram; economics; electric efficiency; electric metering; electrical use; energy consumption; energy programs; energy resiliency; energy use; engineering; environment; Euclidean distance; exploratory data analysis (EDA); financial modeling; greenhouse gases; health; heatmap; hierarchical clustering analysis; humidity ratio; humidity sensor; illumination; industrial control systems; information systems; information technology; infrastructure; internet of things (IoT); Institute of Electrical and Electronics Engineers (IEEE); International Organization for Standardization (ISO); k means; k-nearest neighbors (kNN); Leadership in Energy and Environmental Design (LEED); light sensor; Linear Discriminant Analysis (LDA); machine learning; manufacturing; methane modeling; networks; nitrous oxide modeling; occupancy; operations; passive infrared sensor; policies; Quadratic Discriminant Analysis (QDA); Random Forest (RF); regulations; sensors; service level management; smart cities; standards; statistics; supply chain; systems-of-systems; technology; thermal sensor; time-series; US Green Building Council.
+
+**Attribution-NonCommercial-ShareAlike 4.0 International**
+
+Creative Commons Corporation ("Creative Commons") is not a law firm and does not provide legal services or legal advice. Distribution of Creative Commons public licenses does not create a lawyer-client or other relationship. Creative Commons makes its licenses and related information available on an "as-is" basis. Creative Commons gives no warranties regarding its licenses, any material licensed under their terms and conditions, or any related information. Creative Commons disclaims all liability for damages resulting from their use to the fullest extent possible.
+
+Using Creative Commons Public Licenses
+
+Creative Commons public licenses provide a standard set of terms and conditions that creators and other rights holders may use to share original works of authorship and other material subject to copyright and certain other rights specified in the public license below. The following considerations are for informational purposes only, are not exhaustive, and do not form part of our licenses.
+
+Considerations for licensors: Our public licenses are intended for use by those authorized to give the public permission to use material in ways otherwise restricted by copyright and certain other rights. Our licenses are irrevocable. Licensors should read and understand the terms and conditions of the license they choose before applying it.  Licensors should also secure all rights necessary before applying our licenses so that the public can reuse the material as expected. Licensors should clearly mark any material not subject to the license. This includes other CC-licensed material, or material used under an exception or limitation to copyright. More considerations for licensors:
+
+wiki.creativecommons.org/Considerations_for_licensors
+Considerations for the public: By using one of our public licenses, a licensor grants the public permission to use the licensed material under specified terms and conditions. If the licensor's permission is not necessary for any reason—for example, because of any applicable exception or limitation to copyright--then that use is not regulated by the license. Our licenses grant only permissions under copyright and certain other rights that a licensor has authority to grant. Use of the licensed material may still be restricted for other reasons, including because others have copyright or other rights in the material. A licensor may make special requests, such as asking that all changes be marked or described. Although not required by our licenses, you are encouraged to respect those requests where reasonable. More considerations for the public:
+wiki.creativecommons.org/Considerations_for_licensees
+
+=======================================================================
+
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+Public License
+
+By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.
+
+Section 1 -- Definitions.
+
+  a. Adapted Material means material subject to Copyright and Similar Rights that is derived from or based upon the Licensed Material and in which the Licensed Material is translated, altered, arranged, transformed, or otherwise modified in a manner requiring permission under the Copyright and Similar Rights held by the Licensor. For purposes of this Public License, where the Licensed Material is a musical work, performance, or sound recording, Adapted Material is always produced where the Licensed Material is synced in timed relation with a moving image.
+
+  b. Adapter's License means the license You apply to Your Copyright and Similar Rights in Your contributions to Adapted Material in accordance with the terms and conditions of this Public License.
+
+  c. BY-NC-SA Compatible License means a license listed at creativecommons.org/compatiblelicenses, approved by Creative Commons as essentially the equivalent of this Public License.
+
+  d. Copyright and Similar Rights means copyright and/or similar rights closely related to copyright including, without limitation, performance, broadcast, sound recording, and Sui Generis Database      Rights, without regard to how the rights are labeled or categorized. For purposes of this Public License, the rights specified in Section 2(b)(1)-(2) are not Copyright and Similar Rights.
+
+  e. Effective Technological Measures means those measures that, in the absence of proper authority, may not be circumvented under laws fulfilling obligations under Article 11 of the WIPO Copyright      Treaty adopted on December 20, 1996, and/or similar international agreements.
+
+  f. Exceptions and Limitations means fair use, fair dealing, and/or any other exception or limitation to Copyright and Similar Rights that applies to Your use of the Licensed Material.
+
+  g. License Elements means the license attributes listed in the name of a Creative Commons Public License. The License Elements of this Public License are Attribution, NonCommercial, and ShareAlike.
+
+  h. Licensed Material means the artistic or literary work, database, other material to which the Licensor applied this Public License.
+
+  i. Licensed Rights means the rights granted to You subject to the terms and conditions of this Public License, which are limited to all Copyright and Similar Rights that apply to Your use of the Licensed Material and that the Licensor has authority to license.
+
+  j. Licensor means the individual(s) or entity(ies) granting rights under this Public License.
+
+  k. NonCommercial means not primarily intended for or directed towards commercial advantage or monetary compensation. For purposes of this Public License, the exchange of the Licensed Material for      other material subject to Copyright and Similar Rights by digital file-sharing or similar means is NonCommercial provided there is no payment of monetary compensation in connection with the exchange.
+
+  l. Share means to provide material to the public by any means or process that requires permission under the Licensed Rights, such as reproduction, public display, public performance, distribution,     dissemination, communication, or importation, and to make material available to the public including in ways that members of the may access the material from a place and at a time individually chosen by them.
+
+  m. Sui Generis Database Rights means rights other than copyright resulting from Directive 96/9/EC of the European Parliament and of the Council of 11 March 1996 on the legal protection of databases, as amended and/or succeeded, as well as other essentially equivalent rights anywhere in the world.
+
+  n. You means the individual or entity exercising the Licensed Rights under this Public License. Your has a corresponding meaning.
+
+Section 2 -- Scope.
+
+  a. License grant.
+
+       1. Subject to the terms and conditions of this Public License, Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable license to exercise the Licensed Rights in the Licensed Material to:
+
+            a. reproduce and Share the Licensed Material, in whole or in part, for NonCommercial purposes only; and
+
+            b. produce, reproduce, and Share Adapted Material for NonCommercial purposes only.
+
+       2. Exceptions and Limitations. For the avoidance of doubt, where Exceptions and Limitations apply to Your use, this Public License does not apply, and You do not need to comply with its terms and conditions.
+
+       3. Term. The term of this Public License is specified in Section 6(a).
+
+       4. Media and formats; technical modifications allowed. The Licensor authorizes You to exercise the Licensed Rights in all media and formats whether now known or hereafter created, to make technical modifications necessary to do so. The Licensor waives and/or agrees not to assert any right or authority to forbid You from making technical modifications necessary to exercise the Licensed Rights, including           technical modifications necessary to circumvent Effective Technological Measures. For purposes of this Public License, making modifications authorized by this Section 2(a) (4) never produces Adapted Material.
+
+       5. Downstream recipients.
+
+            a. Offer from the Licensor -- Licensed Material. Every recipient of the Licensed Material automatically receives an offer from the Licensor to exercise the Licensed Rights under the terms and conditions of this Public License.
+
+            b. Additional offer from the Licensor -- Adapted Material.  Every recipient of Adapted Material from You automatically receives an offer from the Licensor to exercise the Licensed Rights in the Adapted Material under the conditions of the Adapter's License You apply.
+
+            c. No downstream restrictions. You may not offer or impose any additional or different terms or conditions on, or apply any Effective Technological Measures to, the Licensed Material if doing so restricts exercise of the Licensed Rights by any recipient of the Licensed Material.
+
+       6. No endorsement. Nothing in this Public License constitutes or may be construed as permission to assert or imply that You are, or that Your use of the Licensed Material is, connected with, or sponsored, endorsed, or granted official status by, Licensor or others designated to receive attribution as           provided in Section 3(a)(1)(A)(i).
+
+  b. Other rights.
+
+       1. Moral rights, such as the right of integrity, are not licensed under this Public License, nor are publicity, privacy, and/or other similar personality rights; however, to the extent possible, the Licensor waives and/or agrees not to assert any such rights held by the Licensor to the limited extent necessary to allow You to exercise the Licensed Rights, but not otherwise.
+
+       2. Patent and trademark rights are not licensed under this Public License.
+
+       3. To the extent possible, the Licensor waives any right to collect royalties from You for the exercise of the Licensed Rights, whether directly or through a collecting society under any voluntary or waivable statutory or compulsory licensing scheme. In all other cases the Licensor expressly reserves any right to collect such royalties, including when the Licensed Material is used other than for NonCommercial purposes.
+
+Section 3 -- License Conditions.
+
+Your exercise of the Licensed Rights is expressly made subject to the following conditions.
+
+  a. Attribution.
+
+       1. If You Share the Licensed Material (including in modified form), You must:
+
+            a. retain the following if it is supplied by the Licensor with the Licensed Material:
+
+                 i. identification of the creator(s) of the Licensed Material and any others designated to receive                     attribution, in any reasonable manner requested by the Licensor (including by pseudonym if                     designated);
+
+                ii. a copyright notice;
+
+               iii. a notice that refers to this Public License;
+
+                iv. a notice that refers to the disclaimer of
+                    warranties;
+
+                 v. a URI or hyperlink to the Licensed Material to the
+                    extent reasonably practicable;
+
+            b. indicate if You modified the Licensed Material and retain an indication of any previous modifications; and
+
+            c. indicate the Licensed Material is licensed under this Public License, and include the text of, or the URI or hyperlink to, this Public License.
+
+       2. You may satisfy the conditions in Section 3(a)(1) in any reasonable manner based on the medium, means, and context in which You Share the Licensed Material. For example, it may be reasonable to satisfy the conditions by providing a URI or hyperlink to a resource that includes the required           information.
+       3. If requested by the Licensor, You must remove any of the information required by Section 3(a)(1)(A) to the extent reasonably practicable.
+
+  b. ShareAlike.
+
+     In addition to the conditions in Section 3(a), if You Share Adapted Material You produce, the following conditions also apply.
+
+       1. The Adapter's License You apply must be a Creative Commons license with the same License Elements, this version or later, or a BY-NC-SA Compatible License.
+
+       2. You must include the text of, or the URI or hyperlink to, the Adapter's License You apply. You may satisfy this condition in any reasonable manner based on the medium, means, and context in which You Share Adapted Material.
+
+       3. You may not offer or impose any additional or different terms conditions on, or apply any Effective Technological Measures to, Adapted Material that restrict exercise of the rights granted under the Adapter's License You apply.
+
+Section 4 -- Sui Generis Database Rights.
+
+Where the Licensed Rights include Sui Generis Database Rights that apply to Your use of the Licensed Material:
+
+  a. for the avoidance of doubt, Section 2(a)(1) grants You the right to extract, reuse, reproduce, and Share all or a substantial portion of the contents of the database for NonCommercial purposes only;
+
+  b. if You include all or a substantial portion of the database contents in a database in which You have Sui Generis Database Rights, then the database in which You have Sui Generis Database Rights (but not its individual contents) is Adapted Material, including for purposes of Section 3(b); and
+  c. You must comply with the conditions in Section 3(a) if You Share or a substantial portion of the contents of the database.
+
+For the avoidance of doubt, this Section 4 supplements and does not replace Your obligations under this Public License where the Licensed Rights include other Copyright and Similar Rights.
+
+Section 5 -- Disclaimer of Warranties and Limitation of Liability.
+
+  a. UNLESS OTHERWISE SEPARATELY UNDERTAKEN BY THE LICENSOR, TO THE EXTENT POSSIBLE, THE LICENSOR OFFERS THE LICENSED MATERIAL AS-IS AND AS-AVAILABLE, AND MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE LICENSED MATERIAL, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHER. THIS INCLUDES, WITHOUT LIMITATION, WARRANTIES OF TITLE, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, ABSENCE OF LATENT OR OTHER DEFECTS, ACCURACY, OR THE PRESENCE OR ABSENCE OF ERRORS, WHETHER OR NOT     KNOWN OR DISCOVERABLE. WHERE DISCLAIMERS OF WARRANTIES ARE NOT ALLOWED IN FULL OR IN PART, THIS DISCLAIMER MAY NOT APPLY TO YOU.
+
+  b. TO THE EXTENT POSSIBLE, IN NO EVENT WILL THE LICENSOR BE LIABLE TO YOU ON ANY LEGAL THEORY (INCLUDING, WITHOUT LIMITATION, NEGLIGENCE) OR OTHERWISE FOR ANY DIRECT, SPECIAL, INDIRECT, INCIDENTAL, CONSEQUENTIAL, PUNITIVE, EXEMPLARY, OR OTHER LOSSES, COSTS, EXPENSES, OR DAMAGES ARISING OUT OF THIS PUBLIC LICENSE OR USE OF THE LICENSED MATERIAL, EVEN IF THE LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH LOSSES, COSTS, EXPENSES, OR DAMAGES. WHERE A LIMITATION OF LIABILITY IS NOT ALLOWED IN FULL OR IN PART, THIS LIMITATION MAY NOT APPLY TO YOU.
+
+  c. The disclaimer of warranties and limitation of liability provided above shall be interpreted in a manner that, to the extent possible, most closely approximates an absolute disclaimer and waiver of all liability.
+
+Section 6 -- Term and Termination.
+
+  a. This Public License applies for the term of the Copyright and Similar Rights licensed here. However, if You fail to comply with this Public License, then Your rights under this Public License terminate automatically.
+
+  b. Where Your right to use the Licensed Material has terminated under Section 6(a), it reinstates:
+
+       1. automatically as of the date the violation is cured, provided it is cured within 30 days of Your discovery of the violation; or
+
+       2. upon express reinstatement by the Licensor.
+
+     For the avoidance of doubt, this Section 6(b) does not affect any right the Licensor may have to seek remedies for Your violations of this Public License.
+
+  c. For the avoidance of doubt, the Licensor may also offer the Licensed Material under separate terms or conditions or stop distributing the Licensed Material at any time; however, doing so will not terminate this Public License.
+
+  d. Sections 1, 5, 6, 7, and 8 survive termination of this Public License.
+
+Section 7 -- Other Terms and Conditions.
+
+  a. The Licensor shall not be bound by any additional or different terms or conditions communicated by You unless expressly agreed.
+
+  b. Any arrangements, understandings, or agreements regarding the Licensed Material not stated herein are separate from and independent of the terms and conditions of this Public License.
+
+Section 8 -- Interpretation.
+
+  a. For the avoidance of doubt, this Public License does not, and shall not be interpreted to, reduce, limit, restrict, or impose conditions on any use of the Licensed Material that could lawfully be made without permission under this Public License.
+
+  b. To the extent possible, if any provision of this Public License is deemed unenforceable, it shall be automatically reformed to the minimum extent necessary to make it enforceable. If the provision      cannot be reformed, it shall be severed from this Public License without affecting the enforceability of the remaining terms and conditions.
+
+  c. No term or condition of this Public License will be waived and no failure to comply consented to unless expressly agreed to by the Licensor.
+
+  d. Nothing in this Public License constitutes or may be interpreted as a limitation upon, or waiver of, any privileges and immunities that apply to the Licensor or You, including from the legal processes of any jurisdiction or authority.
+
+=======================================================================
+
+Creative Commons is not a party to its public licenses. Notwithstanding, Creative Commons may elect to apply one of its public licenses to material it publishes and in those instances will be considered the “Licensor.” The text of the Creative Commons public licenses is dedicated to the public domain under the CC0 Public Domain Dedication. Except for the limited purpose of indicating that material is shared under a Creative Commons public license or as otherwise permitted by the Creative Commons policies published at creativecommons.org/policies, Creative Commons does not authorize the use of the trademark "Creative Commons" or any other trademark or logo of Creative Commons without its prior written consent including, without limitation, in connection with any unauthorized modifications to any of its public licenses or any other arrangements, understandings, or agreements concerning use of licensed material. For the avoidance of doubt, this paragraph does not form part of the public licenses.
+
+Creative Commons may be contacted at creativecommons.org.
+```{r fig.show = "hold", out.width = "40%", fig.align = "center", echo=FALSE}
+knitr::include_graphics("02Images/CC-BY-NC-SA-Image.jpg", dpi = 150) 
+```
+
+This data may also be protected by the California Consumer Privacy Act (CCPA) and other legal restriction depending upon your jurisdiction.
+
+The data is publicly available and shared within the works cited section.  Please download the data for yourself and create meaningful value, while respecting the investment of countless hours, training, education, time, and processes used to develop this publication as a digital product.  Thank you for taking time to read, learn, and hopefully inspiration to contribute towards a better future for all of us.
