@@ -1,5 +1,7 @@
-# Energy-Environment-and-Building-Systems
-This document was initially produced as a series of smaller segments of analysis, then compiled to into this data product to compare the results from a single solution using more efficient building controls
-Due to size restrictions, one of the data set files will need to be downloaded on Kaggle
+# Energy and Environment Readme
+Publications, digital products and other resources related to energy and environmental topics.
+*Some referenced files may require downloading from original sources.
 
-Also viewable on Rpubs: https://rpubs.com/charlesah/EnergyEnvironmentSystems
+https://rpubs.com/charlesah/EnergyEnvironmentSystems
+https://www.researchgate.net/publication/363534332_International_Building_Performance_Simulation_Association_IBPSA_SimBuild_2010_Energy_Modeling_Competition
+https://www.ibpsa.org/simbuild-2010/
